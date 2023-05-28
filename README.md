@@ -23,7 +23,7 @@ Initially this project was made to help me not only to work with trade ups but a
 - Ability to set custom prices for skins within calculator
 - Trade up input item overview page that is sorted by lowest **min float cap**. There is an option to review skins by rarity or collection
 - Daily price sync with CsgoTraderAPP and caching
-- Sticker price checking module
+- Sticker price checking module **[Not working because I was getting rid of MongoDB support and haven't updated the code]**
 
 ## Technical features
 - Angular 9 with RxJS and TypeScript
