@@ -11,7 +11,7 @@ Initially this project was made to help me not only to work with trade ups but a
     developer. Tradeup Ninja is a hobby project that I love developing aside from my full-time job. I already started working on 2nd version
     with redesign and some re-work but I don't know when or if it will get released.
 
-### This project is Production ready Angular application with SSR and Backend by NestJS. Feel free to investigate it and if you have any questions open an Issue or contact me via [our Discord](https://discord.gg/wAXJBpu)
+#### This project is Production ready Angular application with SSR and Backend by NestJS. Feel free to investigate it and if you have any questions open an Issue or contact me via [our Discord](https://discord.gg/wAXJBpu)
 
 ## Key project features
 - Search for trade ups using custom parameters such as profit, success odds, expected value (EV), and many others
