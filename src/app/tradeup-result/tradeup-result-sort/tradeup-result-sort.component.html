@@ -1,0 +1,10 @@
+<button ngbDropdownItem (click)="selectFilter(1)" [class.active]="currentOption === 1">By cost</button>
+<button ngbDropdownItem (click)="selectFilter(2)" [class.active]="currentOption === 2">By Profit</button>
+<div class="dropdown-divider"></div>
+<button ngbDropdownItem (click)="selectFilter(3)" [class.active]="currentOption === 3">By EV</button>
+<button ngbDropdownItem (click)="selectFilter(4)" [class.active]="currentOption === 4">By current percentage</button>
+<button ngbDropdownItem (click)="selectFilter(5)" [class.active]="currentOption === 5">By current success odds</button>
+<div class="dropdown-divider"></div>
+<button ngbDropdownItem (click)="selectFilter(8)" [class.active]="currentOption === 8">By date created</button>
+<button ngbDropdownItem (click)="selectFilter(7)" [class.active]="currentOption === 7">By date modified</button>
+<button ngbDropdownItem (click)="selectFilter(6)" [class.active]="currentOption === 6">By date completed</button>

@@ -1,0 +1,210 @@
+<div class="context">
+  <div class="container">
+    <div class="logo text-center">
+      <a class="d-inline-block" routerLink="/" alt="Link to Tradeup.Ninja">
+        <img src="assets/logo.svg" class="mx-auto d-block" alt="Tradeup Ninja logo">
+      </a>
+    </div>
+    <h1 class="mb-4">Sticker % checker</h1>
+    <div class="row">
+      <div class="col-12 mx-auto">
+        <div class="card sp-card dimmer m-0 p-0" [class.active]="isLoading">
+          <div class="card-status bg-rarity-{{selectedSkinInfo?.rarity.value}}"></div>
+          <div class="loader"></div>
+          <div class="dimmer-content">
+            <div class="card-header flex-wrap">
+              <div class="form-group skinSelect mb-0">
+                <ng-select [class.w-100]="!selectedSkin" [virtualScroll]="true" bindLabel="key" [items]="skinsForSelect"
+                  [(ngModel)]="selectedSkin" (ngModelChange)="selectSkin($event)" [searchFn]="searchFn"
+                  placeholder="Search for a certain skin" *ngIf="!error">
+                </ng-select>
+              </div>
+              <div class="card-options" *ngIf="selectedSkin">
+                <div class="form-group mb-0">
+                  <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown">
+                    <a href="javascript:;" class="btn-link mr-2 text-capitalize" id="priceSource" ngbDropdownAnchor
+                      (click)="myDrop.toggle()">{{selectedProviderKey}} <i
+                        class="chevron-icon fas fa-chevron-down"></i></a>
+                    <div ngbDropdownMenu aria-labelledby="priceSource">
+                      <button ngbDropdownItem *ngFor="let provider of availablePriceProviderKeys"
+                        class="text-capitalize" [class.active]="provider === selectedProviderKey"
+                        (click)="selectProvider(provider)">{{provider}}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <ng-container *ngIf="error">
+                <div class="row">
+                  <div class="col-12">
+                    <div class="alert alert-danger">
+                      {{error}}. Or visit our <a class="link text-dark" [attr.href]="systemConst.discordUrl"
+                        target="_blank" rel="noopener noreferrer">Discord</a>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="selectedSkin; else selectSkinFirstTmpl">
+                <div class="row p-0 m-0">
+                  <div class="col-md-4 text-center mb-4">
+                    <img class="mx-auto weapon" [src]="selectedSkinInfo?.image || 'assets/unknown.png'" alt="">
+                    <p class="font-weight-bold mb-0" [ngClass]="'text-rarity-'+ selectedSkinInfo.rarity.value"
+                      *ngIf="selectedSkinInfo">{{selectedSkinInfo.rarity.name}}</p>
+                    <p class="text-muted mb-0" *ngIf="selectedSkinInfo">{{selectedSkinInfo.collection.name}}</p>
+                    <h5 class="mb-1">
+                      <span class="text-capitalize">{{selectedProviderKey}} Market price:</span>
+                    </h5>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">$</span>
+                        </div>
+                        <input name="marketPrice" min="0" step="0.01" class="form-control"
+                          [class.is-invalid]="marketPriceInput.invalid" type="number" placeholder="0.00"
+                          [(ngModel)]="marketPrice" #marketPriceInput="ngModel" required
+                          (ngModelChange)="calculateSP()">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-8">
+                    <h3 class="mb-0">{{selectedSkin.key}}</h3>
+                    <div>
+                      <h5>Stickers:</h5>
+                      <div class="d-flex justify-content-between flex-wrap">
+                        <ng-container *ngFor="let sticker of selectedStickers; let i = index; let isLast = last">
+                          <ng-container *ngIf="sticker; else selectStickerTmpl">
+                            <div class="d-flex flex-column" [class.ml-3]="!isLast">
+                              <span class="sticker sticker-selected" [ngbPopover]="selectStickerPopover"
+                                [autoClose]="'outside'" popoverClass="sticker-select-popover item-popover"
+                                [ngbTooltip]="sticker.market_hash_name">
+                                <i class="fas fa-edit add-icon"></i>
+                                <img [src]="sticker.image" class="sticker-img" [attr.alt]="sticker.market_hash_name">
+                              </span>
+                              <div class="text-center text-muted">
+                                <ng-container *ngIf="sticker?.providerPrice; else noPriceTmpl">
+                                  {{sticker?.providerPrice | currency:'USD'}}
+                                </ng-container>
+                                <ng-template #noPriceTmpl>
+                                  <div class="text-danger font-weight-bold">
+                                    No price
+                                  </div>
+                                  <div class="mt-1" ngbDropdown #availableProviderDropdown="ngbDropdown">
+                                    <div class="available-prices-link text-primary" id="availableProviders"
+                                      ngbDropdownAnchor
+                                      (click)="createProvidersForSticker(sticker, availableProviderDropdown)">
+                                      See available
+                                      <br>providers
+                                      <i class="chevron-icon fas fa-chevron-down"></i>
+                                    </div>
+                                    <div ngbDropdownMenu aria-labelledby="priceSource">
+                                      <button ngbDropdownItem *ngFor="let provider of availableProviderKeysForSticker"
+                                        class="text-capitalize" (click)="selectProvider(provider)">{{provider}}</button>
+                                    </div>
+                                  </div>
+                                </ng-template>
+                                <i class="fas fa-clone clone-icon" (click)="cloneSticker(sticker)"
+                                  ngbTooltip="Clone sticker into empty slot"></i>
+                              </div>
+                            </div>
+                          </ng-container>
+                          <ng-template #selectStickerTmpl>
+                            <span class="avatar sticker avatar avatar-xl" [ngbPopover]="selectStickerPopover"
+                              [autoClose]="'outside'" #stickerSelectPop="ngbPopover"
+                              popoverClass="sticker-select-popover item-popover">
+                              <i class="fas fa-plus add-icon"></i>
+                            </span>
+                          </ng-template>
+                          <ng-template #selectStickerPopover>
+                            <div class="form-group">
+                              <ng-select class="skinSelect w-100" [virtualScroll]="true" bindLabel="key"
+                                [items]="stickersForSelect" [(ngModel)]="selectedStickers[i]" [searchFn]="searchFn"
+                                placeholder="Search for a certain sticker"
+                                (change)="setStickerInfo(selectedStickers[i], i)">
+                              </ng-select>
+                            </div>
+                          </ng-template>
+                        </ng-container>
+                      </div>
+                    </div>
+                    <div class="mt-3">
+                      <h5 class="mb-1">
+                        Skin listed for:
+                      </h5>
+                      <div class="form-group">
+                        <div class="input-group">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                          </div>
+                          <input name="listed-for" min="0" step="0.01" class="form-control"
+                            [class.is-invalid]="listedForInput.invalid" type="number" placeholder="0.00"
+                            [(ngModel)]="listedFor" required #listedForInput="ngModel" (ngModelChange)="calculateSP()">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+            <div class="card-footer">
+              <div class="row">
+                <div class="col-sm-6 text-sm-left text-center">
+                  <button name="toggleCollapse" class="btn btn-link btn-sm" type="button"
+                    (click)="toggleDarkMode(!userPreferences.darkMode, true)">
+                    Switch to {{userPreferences.darkMode ? 'light' : 'dark'}} mode
+                  </button>
+                </div>
+                <div class="col-sm-6 text-sm-right text-center h4 mb-0">
+                  <div *ngIf="selectedSkin; else selectSkinFirstTmpl">
+                    Sticker price: <b ngbTooltip="(Market price - Listed for price)/(Total sum of stickers)"
+                      [ngClass]="stickerPricePercent >= 0 ? 'text-success' : 'text-danger'">
+                      {{stickerPricePercent | percent: '1.1-2'}}</b>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 mt-3">
+        <div class="h6 text-sm-left text-center desc">
+          Looking for profitable Trade-ups or want to manage your Trade-ups with ease and privacy ?
+          <br>
+          <span class="h5">Try <a class="link font-weight-bold" routerLink="/"
+              alt="Link to Tradeup.Ninja">Tradeup.Ninja</a></span>
+        </div>
+      </div>
+      <div class="col-sm-6 mt-3">
+        <div class="h6 text-sm-right text-center desc">
+          Idea by <a class="link" href="https://steamcommunity.com/id/meistaGG/" target="_blank"
+            rel="noopener noreferrer">meista</a>. Developed by <a class="link"
+            href="https://steamcommunity.com/id/6matko/" target="_blank" rel="noopener noreferrer">6matko</a>
+          <br>
+          Prices by <a class="link" href="https://csgotrader.app/prices/" target="_blank" rel="noopener noreferrer">CSGO
+            Trader App</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #selectSkinFirstTmpl>
+  <ng-container *ngIf="!error">
+    Please select skin
+  </ng-container>
+</ng-template>
+
+<div class="area">
+  <ul class="circles mb-0">
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+  </ul>
+</div>

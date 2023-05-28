@@ -1,0 +1,120 @@
+<div class="floating-info">
+  <div class="card">
+    <div class="row">
+      <div class="preview col-md-4">
+        <div class="preview-pic tab-content">
+          <div class="position-relative">
+            <div class="collection-bg"
+              [style.backgroundImage]="'url(assets/img/'+ (previewSkin?.collection.key || result.calculatedSummary.mostExpensivePrizeItem?.collection.key) +'.png)'">
+            </div>
+            <div class="st" *ngIf="result.stattrak">Stattrak</div>
+            <img
+              [src]="previewSkin?.image || result.calculatedSummary.mostExpensivePrizeItem?.image || 'assets/unknown.png'" />
+            <div class="price text-success">${{result.calculatedSummary.mostExpensivePrize * 0.87 | number:'1.2-2'}}
+              <div class="market-price">
+                ${{result.calculatedSummary.mostExpensivePrize | number:'1.2-2'}}
+              </div>
+            </div>
+            <div class="percent">{{result.calculatedSummary.mostExpensiveOdds | percent:'1.2-2'}}</div>
+          </div>
+          <div>
+            <h3 class="mt-2" [ngClass]="'rarity-'+result.calculatedSummary.mostExpensivePrizeItem?.rarity.value">
+              <b>{{result.calculatedSummary.mostExpensivePrizeItem?.name}}</b><br />
+              <span>{{getSkinRarityName(result.calculatedSummary.mostExpensivePrizeItem?.rarity.value)}}</span>
+            </h3>
+            <hr class="divider" />
+            <div>
+              <h4>Profit: <b>${{result.calculatedSummary.profit | number: '1.2-2'}} <small
+                    class="text-secondary">({{result.calculatedSummary.profitPercentage | percent: '1.2-2'}})</small></b>
+              </h4>
+              <h6>After steam TAX: <b
+                  [ngClass]="result.calculatedSummary.profitPrizeWithoutSteamTAX > 0 ? 'text-success' : 'text-danger'">${{result.calculatedSummary.profitPrizeWithoutSteamTAX | number: '1.2-2'}}</b>
+              </h6>
+              <h5>Expected value: <b>${{result.calculatedSummary.expectedValue | number: '1.2-2'}}</b></h5>
+            </div>
+            <hr class="divider" />
+            <div>
+              <h4>
+                Odds below cost: <b
+                  [class.text-success]="result.calculatedSummary.outcomeSummary.oddsBelowCost < 0.02">{{result.calculatedSummary.outcomeSummary.oddsBelowCost | percent}}</b>
+              </h4>
+            </div>
+            <div>
+              <h6>Items below cost: <b>{{result.calculatedSummary.outcomeSummary.outcomeItemCountBelowCost}} /
+                  {{result.calculatedSummary.outcomeSummary.outcomes.length}}
+                  ({{(result.calculatedSummary.outcomeSummary.outcomeItemCountBelowCost / result.calculatedSummary.outcomeSummary.outcomes.length) | percent: '1.2-2'}})</b>
+              </h6>
+            </div>
+            <hr class="divider" />
+            <div *ngIf="(1 - result.calculatedSummary.outcomeSummary.oddsBelowCost) as successOdds">
+              <h3 class="alert"
+                [ngClass]="{'alert-success': successOdds >= 0.7, 'alert-danger': successOdds <= 0.4, 'alert-warning': successOdds < 0.7 && successOdds > 0.4}">
+                Success odds: <b>{{ successOdds | percent}}</b></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="details col-md-8">
+        <h3 class="product-title"
+          [ngClass]="{'alert': result.calculatedSummary.outcomeSummary.oddsBelowCost <= 0.2, 'alert-success': result.calculatedSummary.outcomeSummary.oddsBelowCost <= 0.02, 'alert-warning': result.calculatedSummary.outcomeSummary.oddsBelowCost > 0.02 && result.calculatedSummary.outcomeSummary.oddsBelowCost <= 0.2}">
+          Current cost: ${{result.calculatedSummary.cost | number: '1.2-2'}}</h3>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Item
+                </th>
+                <th scope="col">Price</th>
+                <th scope="col">Float</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let input of result.inputItems">
+                <td>{{input.name}}</td>
+                <td>{{userPreferences.displayCurrency}}{{input.price | number:'1.2-2'}}</td>
+                <td>{{input.float | number:'1.7-7'}}</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td><b>{{userPreferences.displayCurrency}}{{result.summary.cost | number:'1.2-2'}}</b></td>
+                <td><b>{{result.summary.averageInputFloat| number: '1.7-7' }}</b></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4 justify-content-center">
+      <ng-container *ngFor="let possibleOutcomes of result.calculatedSummary.outcomeSummary.outcomes">
+        <ng-container *ngIf="getSkinPrice(possibleOutcomes.item, possibleOutcomes.float, true) as skinPriceWithoutTax">
+          <div class="col-3 mr-4 outcome-container"
+            [class.below-cost]="skinPriceWithoutTax < result.calculatedSummary.cost"
+            (mouseover)="previewSkin = possibleOutcomes.item" (mouseout)="previewSkin = undefined">
+            <div class="collection-icon"
+              [style.backgroundImage]="'url(assets/img/'+ possibleOutcomes.item.collection.key +'.png)'">
+            </div>
+            <div class="st" *ngIf="result.stattrak">Stattrak</div>
+            <img [src]="possibleOutcomes.item.image || 'assets/unknown.png'" />
+            <div class="skin-name">
+              <ng-container [ngTemplateOutlet]="linkToSteam"
+                [ngTemplateOutletContext]="{itemName: possibleOutcomes.item.name, float: possibleOutcomes.float, stattrak: result.stattrak}">
+              </ng-container>
+            </div>
+            <div class="outcome-price">
+              <span
+                class="market-price">${{getSkinPrice(possibleOutcomes.item, possibleOutcomes.float) | number:'1.2-2'}}</span>
+              |
+              <span class="price-no-tax">${{skinPriceWithoutTax | number:'1.2-2'}}</span>
+            </div>
+            <div class="outcome-percent">{{possibleOutcomes.odds | percent: '1.2-2'}}</div>
+            <span class="d-block text-center">{{possibleOutcomes.float | number: '1.7-7'}}</span>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<ng-template #linkToSteam let-itemName="itemName" let-float="float" let-stattrak="stattrak">
+  <a [attr.href]="'https://steamcommunity.com/market/listings/730/'+(stattrak ? 'StatTrak™ ': '')+itemName+ ' '+ (float | floatToCondition:'fullwithout')"
+    target="_blank" rel="noopener noreferrer">{{itemName}}</a>
+</ng-template>

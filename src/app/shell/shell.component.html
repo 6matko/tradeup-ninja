@@ -1,0 +1,21 @@
+<app-sidebar (openStateChanged)="sidebarOpen = $event"></app-sidebar>
+
+<div class="page position-relative" [class.sidebar-open]="sidebarOpen">
+  <div class="alert alert-warning w-100 mb-0 py-1" *ngIf="false">
+    Inventory is temporary disabled. Sorry for inconvenience. This is due unplanned experimental optimizations that
+    caused unknown issue that needs time to investigate. This message will disappear when inventory will be back on
+    track.
+  </div>
+  <div class="flex-fill">
+    <router-outlet></router-outlet>
+  </div>
+  <app-footer></app-footer>
+</div>
+<app-scroll-to-top></app-scroll-to-top>
+<app-tradeup-simulation
+  *ngIf="simulationIsVisible"
+  [outcomes]="simulationData?.outcomes"
+  [cost]="simulationData?.cost"
+  [stattrak]="simulationData.stattrak"
+>
+</app-tradeup-simulation>

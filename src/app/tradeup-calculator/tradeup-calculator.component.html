@@ -1,0 +1,205 @@
+<ng-template #resultTmpl let-result="result" let-term="term">
+  <div class="w-100">
+    <img [src]="result.image || 'assets/unknown.png'" alt="" height="50" />
+    <span class="ml-2 text-right" [innerHTML]="result.name | highlight: term"></span>
+  </div>
+</ng-template>
+
+<app-tradeup-calculator-overview
+  [inputItems]="inputItems.controls"
+  [tradeupSummary]="tradeupSummary"
+  [tradeupSettings]="tradeupSettings"
+  *ngIf="overviewIsVisible"
+  (overviewClosed)="overviewIsVisible = false"
+>
+</app-tradeup-calculator-overview>
+
+<div class="px-4 my-3 my-md-5">
+  <form [formGroup]="calculatorForm">
+    <div class="row">
+      <div class="col-lg-9">
+        <div class="card dimmer" [class.active]="isLoading || !currentRaritySkins">
+          <div class="loader"></div>
+          <div class="dimmer-content">
+            <div class="card-header py-0">
+              <h3 class="card-title d-none d-md-block">Input items</h3>
+              <div class="card-options">
+                <ng-container *ngIf="userAuthenticated">
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm mr-4"
+                    (click)="openMultipleItemSelectModal()"
+                    placement="bottom"
+                    ngbTooltip="Add multiple items from inventory"
+                  >
+                    Add multiple
+                  </button>
+                </ng-container>
+                <a
+                  href="javascript:;"
+                  class="mr-4"
+                  (click)="resetCalculator()"
+                  placement="bottom"
+                  ngbTooltip="Clear trade up"
+                >
+                  <i class="fe fe-trash"></i>
+                </a>
+                <a href="javascript:;" (click)="toggleCollapse()" placement="bottom" ngbTooltip="Collapse/Expand">
+                  <i class="fe" [ngClass]="inputsCollapsed ? 'fe-chevron-down' : 'fe-chevron-up'"></i>
+                </a>
+              </div>
+            </div>
+
+            <div [ngbNavOutlet]="nav"></div>
+
+            <ng-template #itemsByRarityTmpl let-rarity="rarity">
+              <div class="table-responsive" [class.d-none]="inputsCollapsed">
+                <table class="table table-hover table-outline table-vcenter text-nowrap card-table">
+                  <thead>
+                    <tr>
+                      <th class="text-center w-1"><i class="icon-people"></i></th>
+                      <th class="info-head-container">Input item</th>
+                      <th class="input-head-container">Float</th>
+                      <th class="input-head-container">Price</th>
+                      <th class="text-center"><i class="icon-settings"></i></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container formArrayName="items">
+                      <ng-container *ngFor="let item of inputItems.controls; let i = index">
+                        <tr
+                          app-calculator-input-item
+                          [control]="item"
+                          [skinsForAutocomplete]="currentRaritySkins"
+                          [structCollections]="structCollection"
+                        ></tr>
+                      </ng-container>
+                    </ng-container>
+                  </tbody>
+                </table>
+              </div>
+            </ng-template>
+            <div class="card-footer d-flex justify-content-between">
+              <div>
+                Average float: <b>{{ averageFloat ? (averageFloat | number: '1.7-7') : '-' }}</b>
+              </div>
+              <ng-container *ngIf="tradeupSummary; else addMoreItemsTmpl">
+                <div>
+                  Cost: <b>{{ tradeupSummary.cost | currency: 'USD':'symbol':'1.2-2' }}</b>
+                </div>
+              </ng-container>
+              <ng-template #addMoreItemsTmpl>
+                <div>Add {{ emptySlotAmount }} more items</div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" *ngIf="tradeupSummary; else noOutcomesTmpl">
+          <div class="card-header">
+            <h3 class="card-title d-none d-md-block">Outcomes</h3>
+          </div>
+
+          <app-tradeup-calculator-outcome
+            [tradeupSummary]="tradeupSummary"
+            [tradeupSettings]="tradeupSettings"
+            (outcomePriceChanged)="recalculateSummary($event)"
+          >
+          </app-tradeup-calculator-outcome>
+        </div>
+        <ng-template #noOutcomesTmpl>
+          <div class="card" *ngIf="!emptySlotAmount">
+            <div class="card-body">
+              <div class="alert alert-warning h4 text-center">
+                Could not get outcomes
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+      <div class="col-lg-3">
+        <div class="card">
+          <div class="card-body">
+            <div class="form-group">
+              <div class="custom-control custom-switch">
+                <input
+                  type="checkbox"
+                  formControlName="withoutSteamTax"
+                  class="custom-control-input"
+                  id="withoutSteamTax"
+                />
+                <label class="custom-control-label" for="withoutSteamTax"
+                  >Use prices after Steam tax
+                  <i
+                    class="fas fa-info-circle ml-1 text-info"
+                    placement="bottom"
+                    ngbTooltip="Based on this property it is decided what items are considered below cost. If disabled then amount of items below cost will be compared to SCM price (With Steam Tax, 13%)"
+                    openDelay="300"
+                  ></i>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Stattrak or normal</label>
+              <div class="selectgroup selectgroup-pills">
+                <label class="selectgroup-item">
+                  <input type="radio" [value]="true" class="selectgroup-input" formControlName="stattrak" />
+                  <span class="selectgroup-button stattrak">STATTRAK</span>
+                </label>
+                <label class="selectgroup-item">
+                  <input type="radio" [value]="false" class="selectgroup-input" formControlName="stattrak" />
+                  <span class="selectgroup-button">Normal</span>
+                </label>
+              </div>
+            </div>
+            <ng-container>
+              <label class="form-label">Rarity</label>
+              <div
+                class="selectgroup selectgroup-pills"
+                ngbNav
+                #nav="ngbNav"
+                [(activeId)]="currentTabId"
+                (navChange)="changeTab($event)"
+              >
+                <ng-container *ngFor="let rarity of rarities">
+                  <div [ngbNavItem]="rarity">
+                    <a ngbNavLink>
+                      <label class="selectgroup-item">
+                        <input type="radio" formControlName="rarity" class="selectgroup-input" [value]="rarity" />
+                        <span class="selectgroup-button" [ngClass]="'rarity-' + rarity">{{ rarityEnum[rarity] }}</span>
+                      </label>
+                    </a>
+                    <ng-template ngbNavContent>
+                      <ng-container
+                        [ngTemplateOutlet]="itemsByRarityTmpl"
+                        [ngTemplateOutletContext]="{ rarity: rarity }"
+                      >
+                      </ng-container>
+                    </ng-template>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <ng-container *ngIf="tradeupSummary">
+          <app-tradeup-calculator-summary [tradeupSettings]="tradeupSettings" [tradeupSummary]="tradeupSummary">
+          </app-tradeup-calculator-summary>
+        </ng-container>
+
+        <app-tradeup-calculator-actions
+          [summary]="tradeupSummary"
+          [settings]="tradeupSettings"
+          [inputItems]="inputItems.value"
+          [structCollections]="structCollection"
+          (loadingActive)="isLoading = $event"
+          (resetTradeup)="resetCalculator()"
+          [emtpySlotAmount]="emptySlotAmount"
+          (openOverview)="overviewIsVisible = true"
+        >
+        </app-tradeup-calculator-actions>
+      </div>
+    </div>
+  </form>
+</div>

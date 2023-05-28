@@ -1,0 +1,22 @@
+{
+    "attr-lowercase": false,  // cannot handle - `<ng-template [ngIf]="isVisible">`
+    "attr-no-duplication": false, // Can't handle multiple formControlName's on different elements
+    "attr-unsafe-chars": true,
+    "attr-value-double-quotes": true,
+    "doctype-first": false,  // Unable to handle HTML templates for components
+    "doctype-html5": true,
+    "id-class-ad-disabled": true,
+    "id-class-value": false, // cannot handle - `<div class="{{card.css}}"></div>`
+    "id-unique": false, // cannot handle -
+                        // <li *ngIf="isEdit"> <a id="id1">id1</a> </li>
+                        // <li *ngIf="!isEdit"> <span id="id1">id1</span> </li>
+    "inline-style-disabled": true,
+    "space-tab-mixed-disabled": "space2",
+    "spec-char-escape": true,
+    "src-not-empty": true,
+    "style-disabled": true,
+    "tag-pair": true,
+    "tag-self-close": true,
+    "tagname-lowercase": true,
+    "title-require": true
+}

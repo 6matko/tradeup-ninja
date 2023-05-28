@@ -1,0 +1,100 @@
+.floating-filter {
+    position: fixed;
+    left: 0;
+    right: 1rem;
+    bottom: 1rem;
+    // Higher by 1 than multiselect dropdown (it has z-index: 200)
+    z-index: 201;
+}
+
+
+virtual-scroller {
+    width: 100%;
+    height: 800px;
+}
+
+.tile {
+    width: 100%;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 3px -1px rgba(151, 171, 187, 0.7);
+    float: left;
+    transform-style: preserve-3d;
+    margin: 10px 5px;
+
+    .dates strong,
+    .stats strong {
+        display: block;
+        color: #adb8c2;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .dates {
+        border: 1px solid #ebeff2;
+        border-radius: 5px;
+        padding: 20px 0;
+        margin: 10px 20px;
+        font-size: 18px;
+        color: #5aadef;
+        font-weight: 600;
+        overflow: auto;
+
+        .info-block {
+            text-align: center;
+
+            &.action-btns {
+                height: 100%;
+                justify-content: flex-end;
+                align-items: center;
+                display: flex;
+            }
+
+            strong {
+                display: inline;
+
+            }
+
+            .value {
+                font-size: 48px;
+                margin-left: 0.5rem;
+            }
+        }
+
+        .empty-divider {
+            width: 1px;
+            height: 100%;
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: #ebeff2;
+        }
+    }
+
+
+    .stats {
+        border-top: 1px solid #ebeff2;
+        background: #f7f8fa;
+        overflow: auto;
+        padding: 15px 0;
+        font-size: 16px;
+        color: #59687f;
+        font-weight: 600;
+        border-radius: 0 0 5px 5px;
+
+        .row {
+            margin-left: 0;
+            margin-right: 0;
+
+            .info-block {
+                border-right: 1px solid #ebeff2;
+                text-align: center;
+                text-transform: uppercase;
+
+                &:nth-of-type(3) {
+                    border: none;
+                }
+            }
+        }
+    }
+}

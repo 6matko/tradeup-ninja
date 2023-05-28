@@ -1,0 +1,16 @@
+.floating-info {
+    position: fixed;
+    right: 0.5rem;
+    top: 0.5rem;
+    bottom: 0;
+    overflow-y: auto;
+    min-width: 500px;
+    max-width: 600px;
+    z-index: 10;
+
+    .table {
+        img {
+            width: 40px;
+        }
+    }
+}

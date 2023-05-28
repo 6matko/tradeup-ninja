@@ -1,0 +1,79 @@
+<div [formGroup]="simulationForm" class="floating-simulation card" [class.card-fullscreen]="fullScreen"
+  [class.isShown]="isShown">
+  <div class="card-header">
+    <h3 class="card-title">Simulate tradeup. Cost {{cost | currency:'USD':'symbol':'1.2-2'}}
+      <span class="tag tag-orange" *ngIf="stattrak">STATTRAK</span> </h3>
+    <div class="card-options">
+      <div class="form-group mb-0">
+        <div class="selectgroup">
+          <label class="selectgroup-item mb-0">
+            <input type="radio" value="stats" class="selectgroup-input" formControlName="selectedView" />
+            <span class="selectgroup-button py-0">Stats</span>
+          </label>
+          <label class="selectgroup-item mb-0">
+            <input type="radio" value="graph" class="selectgroup-input" formControlName="selectedView" />
+            <span class="selectgroup-button py-0">Graph</span>
+          </label>
+          <label class="selectgroup-item mb-0">
+            <input type="radio" value="items" class="selectgroup-input" formControlName="selectedView" />
+            <span class="selectgroup-button py-0">Items</span>
+          </label>
+        </div>
+      </div>
+      <a href="javascript:;" class="card-options-fullscreen" (click)="toggleFullScreen()"><i class="fe"
+          [ngClass]="!fullScreen ? 'fe-maximize' : 'fe-minimize'"></i></a>
+      <a href="javascript:;" class="card-options-remove" (click)="closeSimulation()"><i class="fe fe-x"></i></a>
+    </div>
+  </div>
+  <div class="card-body">
+    <ng-container *ngIf="simulatedOutcomes.length; else noSimulations">
+      <ng-container [ngSwitch]="simulationForm.get('selectedView').value">
+        <app-simulate-stats *ngSwitchCase="'stats'" [simulatedOutcomes]="simulatedOutcomes" [cost]="cost"
+          [stattrak]="stattrak" [allOutcomes]="outcomes"></app-simulate-stats>
+        <app-simulate-items *ngSwitchCase="'items'" [simulatedOutcomes]="simulatedOutcomes" [cost]="cost"
+          [stattrak]="stattrak"></app-simulate-items>
+        <app-simulate-graph *ngSwitchCase="'graph'" [simulatedOutcomes]="simulatedOutcomes" [cost]="cost"
+          [stattrak]="stattrak"></app-simulate-graph>
+        <div *ngSwitchDefault>Any other</div>
+      </ng-container>
+    </ng-container>
+  </div>
+  <div class="card-footer">
+    <div class="card-options justify-content-between">
+      <div class="h4 mb-0">
+        Total profit: <span
+          [ngClass]="simulationSummary.totalProfit >= 0 ? 'text-success' : 'text-danger'">{{simulationSummary.totalProfit | currency:'USD':'symbol':'1.2-2'}}</span>
+        | Success:
+        <span
+          [ngClass]="simulationSummary.totalProfit >= 0 ? 'text-success' : 'text-danger'">{{simulationSummary.successfulOutcomes}}/{{simulatedOutcomes.length}}
+          ({{simulationSummary.successRate | percent}})</span>
+      </div>
+      <div>
+        <div class="input-group">
+          <input type="number" class="form-control form-control-sm"
+            placeholder="How many tradeups to simulate ? For example, 5" name="simulationCount" min="1" max="100"
+            [max]="100" formControlName="simulationCount"
+            [class.is-invalid]="simulationForm.get('simulationCount').invalid">
+          <span class="input-group-btn ml-2">
+            <button type="button" class="btn btn-primary btn-sm ml-2" (click)="simulate()"
+              [disabled]="simulationForm.get('simulationCount').invalid">Simulate</button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #noSimulations>
+  <ng-container *ngIf="!isLoading; else loadingTmpl">
+    <div class="h3 text-center text-warning mt-4">
+      Set simulation count (1 - 100) and press "Simulate".
+    </div>
+  </ng-container>
+</ng-template>
+
+<ng-template #loadingTmpl>
+  <div class="w-100 text-center">
+    <div class="loading-indicator searching-loader"></div>
+  </div>
+</ng-template>

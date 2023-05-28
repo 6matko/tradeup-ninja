@@ -1,0 +1,21 @@
+.nav-item,
+.nav-link {
+    padding: 0;
+}
+
+.info-head-container {
+    min-width: 250px;
+}
+
+.input-head-container {
+    min-width: 180px;
+    // This is needed to prevent jumping sizes
+    max-width: 180px;
+}
+
+@media screen and (max-width: 996px) {
+    .info-head-container {
+        min-width: auto;
+        max-width: auto;
+    }
+}

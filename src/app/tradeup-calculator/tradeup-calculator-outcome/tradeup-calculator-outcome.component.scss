@@ -1,0 +1,23 @@
+@import "../../../theme/theme-variables.scss";
+
+.skin-image {
+    width: 40px;
+    height: 40px;
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    transition: 0.3s ease;
+}
+
+.best-outcome {
+    td:first-child {
+        border-left: 5px solid $success;
+    }
+}
+
+.worst-outcome {
+    td:first-child {
+        border-left: 5px solid $danger;
+    }
+}

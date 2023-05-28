@@ -1,0 +1,322 @@
+<form class="px-4 py-3" [formGroup]="settingsForm" novalidate>
+  <div class="form-group">
+    <label class="form-label">Rarity</label>
+    <div class="selectgroup selectgroup-vertical w-100">
+      <label class="selectgroup-item" *ngFor="let rarity of rarities">
+        <input type="radio" [value]="rarity" formControlName="rarity" class="selectgroup-input" />
+        <span class="selectgroup-button">{{ rarityEnum[rarity] }}</span>
+      </label>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="custom-control custom-switch">
+      <input type="checkbox" formControlName="stattrak" class="custom-control-input" id="stattrak" />
+      <label class="custom-control-label" for="stattrak">Stattrak</label>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="custom-control custom-switch">
+      <input type="checkbox" formControlName="compareWithoutTax" class="custom-control-input" id="compareWithoutTax" />
+      <label class="custom-control-label" for="compareWithoutTax"
+        >Compare after Steam Tax
+        <i
+          class="fas fa-info-circle ml-1 text-info"
+          placement="top"
+          ngbTooltip="Based on this property it is decided what items are considered below cost. If disabled then amount of items below cost will be compared to SCM price (With Steam Tax, 13%)"
+          openDelay="300"
+        ></i>
+      </label>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="custom-control custom-switch">
+      <input
+        type="checkbox"
+        formControlName="useSingleCollection"
+        class="custom-control-input"
+        id="useSingleCollection"
+      />
+      <label class="custom-control-label" for="useSingleCollection"
+        >Use single collection items
+        <i
+          class="fas fa-info-circle ml-1 text-info"
+          placement="bottom"
+          ngbTooltip="If this is enabled then input items will be taken only from single collection (Faster search)"
+        ></i>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="form-group">
+        <label class="control-label">Max tradeups</label>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <input type="number" class="form-control" aria-label="Max tradeup amount" formControlName="maxTradeups" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-group">
+        <label class="control-label">Max tradeup cost</label>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">$</span>
+            </div>
+            <input type="number" class="form-control" aria-label="Amount" formControlName="maxCost" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-group">
+        <label class="control-label"
+          >Difficulty (0-1) - {{ settingsForm.get('difficulty').value }}
+          <i
+            class="fas fa-info-circle ml-1 text-info"
+            placement="top"
+            ngbTooltip="The lower the value is the lower input item floats are needed (harder to find). Higher value will result into more easier floats and might help find tradeups with higher quality (FT, WW, BS)"
+          ></i
+        ></label>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <input
+              type="range"
+              class="custom-range"
+              min="0.01"
+              max="0.99"
+              step="0.01"
+              id="difficulty"
+              formControlName="difficulty"
+              [class.is-invalid]="settingsForm.get('difficulty').invalid"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-group">
+        <label class="control-label">Min volume</label>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <input type="number" class="form-control" aria-label="Minimal volume" formControlName="minVolume" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-group">
+        <label class="control-label"
+          >Min EV (%)
+          <i
+            class="fas fa-info-circle ml-1 text-info"
+            placement="top"
+            ngbTooltip="Minimal EV (%) from which tradeups will be considered as profitable and show up for users. Negative EV can be used to find high risk - high reward trade ups"
+          ></i>
+        </label>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <input
+              type="number"
+              class="form-control"
+              aria-label="Minimal Expected Value percentage"
+              formControlName="minEVPercent"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-group">
+        <label class="control-label">Min success (%) - {{ settingsForm.get('minSuccess').value }} </label>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <input
+              type="range"
+              class="custom-range"
+              min="0"
+              max="100"
+              step="1"
+              id="difficulty"
+              formControlName="minSuccess"
+              [class.is-invalid]="settingsForm.get('minSuccess').invalid"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-group">
+        <label class="control-label">Max success (%) - {{ settingsForm.get('maxSuccess').value }} </label>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <input
+              type="range"
+              class="custom-range"
+              min="0"
+              max="100"
+              step="1"
+              id="difficulty"
+              formControlName="maxSuccess"
+              [class.is-invalid]="settingsForm.get('maxSuccess').invalid"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <ng-container *ngIf="false">
+      <!-- TODO: Uncomment if there will be an option to select skins from inventory -->
+      <!-- <div class="col-12" *ngIf="isLoggedIn$ | async as isLoggedIn">
+        <div class="form-group">
+          <label class="control-label">Skins to include from inventory
+            <i class="fas fa-info-circle ml-1 text-info" placement="top"
+              ngbTooltip="Primary collection is collection that will be always used in search. Secondary collection items will be used based on best found variations"></i>
+          </label>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <ng-select #inventorySelect class="w-100" [searchable]="false" [items]="inventory$ | async"
+                [virtualScroll]="true" formControlName="skinsFromInventory" [multiple]="true" groupBy="item_name"
+                [selectableGroup]="true" [selectableGroupAsModel]="false" bindLabel="item_name" [closeOnSelect]="false"
+                [compareWith]="compareItemsForSelect">
+                <ng-template ng-header-tmp>
+                  <button (click)="selectAll()" class="btn btn-sm btn-primary w-100 mb-2">Select all</button>
+                  <input class="form-control form-control-sm" type="text"
+                    (input)="inventorySelect.filter($event.target.value)" placeholder="Search" />
+                </ng-template>
+                <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                  <span aria-hidden="true" class="ng-value-icon left" (click)="clear(item)">×</span>
+                  <span>
+                    {{ item.item_name }} (<b>{{ item.floatvalue | number: '1.7-7' }}</b>)
+                  </span>
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                  <b>{{ item.item_name }} (<{{ item.floatvalue | number: '1.7-7' }})</b>
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="custom-control custom-switch">
+            <input type="checkbox" formControlName="onlyInventory" class="custom-control-input" id="onlyInventory" />
+            <label class="custom-control-label" for="onlyInventory">Use only inventory items</label>
+          </div>
+        </div>
+      </div> -->
+    </ng-container>
+    <ng-container *ngIf="true || !settingsForm.get('onlyInventory').value">
+      <div class="col-12">
+        <div class="form-group">
+          <label class="control-label"
+            >Primary search collection
+            <i
+              class="fas fa-info-circle ml-1 text-info"
+              placement="top"
+              ngbTooltip="Primary collection is collection that will be always used in search. Secondary collection items will be used based on best found variations"
+            ></i>
+          </label>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <ng-select
+                class="w-100"
+                [items]="collections"
+                [virtualScroll]="true"
+                formControlName="primaryCollection"
+                [multiple]="false"
+                bindLabel="name"
+                [searchFn]="searchCollectionWithoutDot"
+              ></ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-group">
+          <label class="control-label"
+            >Collections to include
+            <i
+              class="fas fa-info-circle ml-1 text-info"
+              placement="top"
+              ngbTooltip="Select which collections to include into search. Keep in mind that search will be done ONLY within SELECTED collections. You can select multiple collections to include."
+            ></i>
+          </label>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <ng-select
+                class="w-100"
+                [items]="collections"
+                [virtualScroll]="true"
+                formControlName="includedCollections"
+                [multiple]="true"
+                bindLabel="name"
+                [searchFn]="searchCollectionWithoutDot"
+              >
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-group">
+          <label class="control-label"
+            >Collections to exclude
+            <i
+              class="fas fa-info-circle ml-1 text-info"
+              placement="top"
+              ngbTooltip="Select collections that should be excluded from search. Keep in mind that INCLUDED collections will not work with EXCLUDED. If both are selected then search will IGNORE INCLUDED collections. You can select multiple collections to exclude."
+            ></i>
+          </label>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <ng-select
+                class="w-100"
+                [items]="collections"
+                [virtualScroll]="true"
+                formControlName="excludedCollections"
+                [multiple]="true"
+                bindLabel="name"
+                [searchFn]="searchCollectionWithoutDot"
+              >
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-group">
+          <label class="control-label"
+            >Skins to exclude
+            <i
+              class="fas fa-info-circle ml-1 text-info"
+              placement="top"
+              ngbTooltip="You can select multiple skins that will be ignored during search."
+            ></i>
+          </label>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <ng-select
+                class="w-100"
+                [virtualScroll]="true"
+                [items]="skinsForSelect"
+                formControlName="excludedSkins"
+                [multiple]="true"
+                bindLabel="name"
+                bindValue="name"
+                [hideSelected]="true"
+                [closeOnSelect]="false"
+              >
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <div class="col-12" *ngIf="lastUpdate">
+      <div class="text-muted text-right">Prices synced at {{ lastUpdate | date: 'H:mm, MMMM d, y (z)' }}</div>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,29 @@
+<table class="table card-table">
+  <thead *ngIf="showHeader">
+    <tr>
+      <td></td>
+      <td [class.text-right]="!showStattrakPrices" *ngIf="showNormalPrices">Normal</td>
+      <td *ngIf="showStattrakPrices" class="text-right text-warning">Stattrak</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let condition of conditionsForPrices; let i = index"
+      [ngClass]="{'bg-info text-white': i === highlightedIndex}">
+      <td>{{condition.condition}}</td>
+      <td [class.text-right]="!showStattrakPrices" *ngIf="showNormalPrices">
+        <ng-container *ngIf="getSkinPrice(item, condition.float, false) as price; else noPriceTmpl">
+          {{price | currency:'USD':'symbol':'1.2-2' || '-'}}
+        </ng-container>
+      </td>
+      <td class="text-right text-orange" *ngIf="showStattrakPrices">
+        <ng-container *ngIf="getSkinPrice(item, condition.float, true) as price; else noPriceTmpl">
+          {{price | currency:'USD':'symbol':'1.2-2' || '-'}}
+        </ng-container>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #noPriceTmpl>
+
+</ng-template>

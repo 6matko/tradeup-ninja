@@ -1,0 +1,35 @@
+<div id="userPreferencesModal" class="modal-content">
+  <form [formGroup]="preferencesForm" (submit)="savePreferences()">
+    <div class="modal-header">
+      <h5 class="modal-title">User preferences</h5>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+      </button>
+    </div>
+    <div class="modal-body pt-0">
+      <div class="row mt-3">
+        <div class="col-12">
+          <div class="form-group" [class.has-danger]="preferencesForm.get('displayCurrency').invalid">
+            <label class="form-control-label" for="displayCurrency">Currency for display <i
+                class="fas fa-info-circle ml-1 text-info" placement="bottom" container="#userPreferencesModal"
+                [ngbTooltip]="displayCurrencyDescription"></i></label>
+            <input type="text" class="form-control" formControlName="displayCurrency" aria-label="Currency for display"
+              id="displayCurrency" [class.is-invalid]="preferencesForm.get('displayCurrency').invalid" />
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-group">
+            <div class="custom-control custom-switch">
+              <input type="checkbox" formControlName="darkMode" class="custom-control-input" id="darkMode" />
+              <label class="custom-control-label" for="darkMode">Dark mode enabled</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal"
+        (click)="activeModal.dismiss()">Close</button>
+      <button type="submit" class="btn btn-primary" [disabled]="preferencesForm.invalid">Save changes</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,17 @@
+<button ngbDropdownItem (click)="selectFilter(1)" [class.active]="currentOption === 1">By cost</button>
+<button ngbDropdownItem (click)="selectFilter(2)" [class.active]="currentOption === 2">By Expected Value</button>
+<div class="dropdown-divider"></div>
+<button ngbDropdownItem (click)="selectFilter(3)" [class.active]="currentOption === 3">By profit (%)</button>
+<button ngbDropdownItem (click)="selectFilter(4)" [class.active]="currentOption === 4">By profit ($$$)</button>
+<div class="dropdown-divider"></div>
+<button ngbDropdownItem (click)="selectFilter(5)" [class.active]="currentOption === 5">By success odds</button>
+<button ngbDropdownItem (click)="selectFilter(6)" [class.active]="currentOption === 6">By most expensive
+  outcome</button>
+<button ngbDropdownItem (click)="selectFilter(7)" [class.active]="currentOption === 7">By most expensive outcome
+  odds</button>
+<div class="dropdown-divider"></div>
+<button ngbDropdownItem (click)="selectFilter(8)" [class.active]="currentOption === 8">By least outcome items</button>
+<button ngbDropdownItem (click)="selectFilter(9)" [class.active]="currentOption === 9">By lowest item amount below
+  cost</button>
+<button ngbDropdownItem (click)="selectFilter(10)" [class.active]="currentOption === 10">By lowest loss on worst
+  outcome</button>

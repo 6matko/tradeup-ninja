@@ -1,0 +1,159 @@
+<div *ngIf="isLoading">
+  <div class="h2">
+    <div class="loading-indicator searching-loader"></div>
+    <div class="text-muted text-center">Searching...</div>
+  </div>
+  <div class="my-3" *ngIf="searchProgress?.total">
+    <ngb-progressbar type="success" [value]="searchProgress.current" [max]="searchProgress.total" [striped]="true"
+      [animated]="true">
+    </ngb-progressbar>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="media">
+      <span class="avatar avatar-xl mr-5 fas fa-cogs"></span>
+      <div class="media-body">
+        <h4 class="m-0">Actions</h4>
+        <ul class="action-links list-inline mb-0 mt-2">
+          <li class="list-inline-item"
+            [ngbTooltip]="emtpySlotAmount !== 10 ? 'Overview trade up in grid view' : 'Add items to calculator in order to overview this trade up'">
+            <button class="action-btn" type="button" [disabled]="emtpySlotAmount === 10" container="body"
+              (click)="emitOverviewOpening()"><i class="fas fa-th-large"></i>
+            </button>
+          </li>
+          <li class="list-inline-item"
+            [ngbTooltip]="emtpySlotAmount !== 10 ? 'Share trade up' : 'Add items to calculator in order to share this trade up'">
+            <button class="action-btn" type="button" [disabled]="emtpySlotAmount === 10" container="body"
+              (click)="createShareLink()" [ngbPopover]="shareTradeupPopover"
+              popoverClass="share-popover alert alert-info p-2" [autoClose]="'outside'"><i class="fas fa-share"></i>
+            </button>
+          </li>
+          <li class="list-inline-item" *ngIf="!isLoading"
+            [ngbTooltip]="summary ? 'You have all slots filled. Nothing to fill' : 'Fill trade ups with optimal filler items'">
+            <button class="action-btn" type="button" [disabled]="summary" container="body"
+              [ngbPopover]="searchFillersContent" [popoverTitle]="searchFillersTitle" [autoClose]="'outside'"><i
+                class="fas fa-search"></i>
+            </button>
+          </li>
+          <li class="list-inline-item" *ngIf="isLoading">
+            <button class="action-btn" type="button" ngbTooltip="Stop searching" (click)="stop()"><i
+                class="fas fa-stop"></i>
+            </button>
+          </li>
+          <li class="list-inline-item" ngbTooltip="Save trade up to results">
+            <button class="action-btn" type="button" (click)="addToResult()"><i class="fas fa-plus"></i>
+            </button>
+          </li>
+          <li class="list-inline-item" container="body" placement="top"
+            [ngbTooltip]="summary ? 'Simulate trade up' : 'Complete trade up to perform simulation'">
+            <button class="action-btn" type="button" [disabled]="!summary" (click)="simulateTradeup()"><i
+                class="fas fa-forward"></i>
+            </button>
+          </li>
+          <li class="list-inline-item" container="body" placement="top"
+            [ngbTooltip]="emtpySlotAmount !== 10 ? 'Download input items as .CSV file' : 'Add items to trade up in order to download .CSV file'">
+            <button class="action-btn" type="button" [disabled]="emtpySlotAmount === 10" (click)="downloadCSV()"><i
+                class="fas fa-file-csv"></i>
+            </button>
+          </li>
+          <li class="list-inline-item" container="body" placement="top" ngbTooltip="Clear trade up">
+            <button class="danger action-btn" type="button" (click)="clearTradeup()"><i class="fas fa-trash"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #searchFillersContent>
+  <form [formGroup]="searchSettingForm" (submit)="start()">
+    <div class="text-center h5">{{summary ? 'You have all slots filled. Nothing to fill' : 'Search for filler items'}}
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <div class="custom-control custom-switch">
+            <input type="checkbox" formControlName="useSingleCollection" class="custom-control-input"
+              id="useSingleCollection" />
+            <label class="custom-control-label" for="useSingleCollection">Use single collection items
+              <i class="fas fa-info-circle ml-1 text-info" placement="bottom"
+                ngbTooltip="If single collection is disabled then filler items will be taken within one or two different collections which means there will be more variations. If this is enabled then filler items will be taken only from single collection (Faster search)"></i>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-group">
+          <label class="control-label">Difficulty (0-1) - {{searchSettingForm.get('difficulty').value}} <i
+              class="fas fa-info-circle ml-1 text-info" placement="top"
+              ngbTooltip="The lower the value is the lower input item floats are needed (harder to find). Higher value will result into more easier floats and might help find tradeups with higher quality (FT, WW, BS)"></i>
+          </label>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <input type="range" class="custom-range" min="0.01" max="0.99" step="0.01" id="difficulty"
+                formControlName="difficulty" [class.is-invalid]="searchSettingForm.get('difficulty').invalid" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-group">
+          <label class="control-label">Min volume</label>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <input type="number" class="form-control" aria-label="Minimal volume" formControlName="minVolume" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-group">
+          <label class="control-label">Collections to include
+            <i class="fas fa-info-circle ml-1 text-info" placement="top"
+              ngbTooltip="Select which collections to include into search. Keep in mind that search will be done ONLY within SELECTED collections. You can select multiple collections to include."></i>
+          </label>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <ng-select class="w-100" [items]="collectionsForSearch" formControlName="includedCollections"
+                [multiple]="true" bindLabel="name" [searchFn]="searchFn"></ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-group">
+          <label class="control-label">Collections to exclude
+            <i class="fas fa-info-circle ml-1 text-info" placement="top"
+              ngbTooltip="Select collections that should be excluded from search. Keep in mind that INCLUDED collections will not work with EXCLUDED. If both are selected then search will IGNORE INCLUDED collections. You can select multiple collections to exclude."></i>
+          </label>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <ng-select class="w-100" [items]="collectionsForSearch" formControlName="excludedCollections"
+                [multiple]="true" bindLabel="name" [searchFn]="searchFn"></ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center">
+      <button type="submit" class="btn btn-outline-success">
+        Search
+      </button>
+    </div>
+  </form>
+</ng-template>
+<ng-template #searchFillersTitle>Search settings</ng-template>
+
+
+<ng-template #shareTradeupPopover>
+  <h4 class="text-white mb-2">Share this tradeup via following URL</h4>
+  <div class="leading-tight text-white share-url">
+    {{shareUrl}}
+  </div>
+  <div class="btn-list mt-3">
+    <button class="btn btn-success btn-block" type="button" (click)="copyShareLink()">{{copyLinkDisplayText}}</button>
+  </div>
+</ng-template>

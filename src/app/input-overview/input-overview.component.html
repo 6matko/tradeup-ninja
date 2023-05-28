@@ -1,0 +1,131 @@
+<div id="input-overview" class="my-3 my-md-5">
+  <div class="px-5">
+    <div class="page-header mb-0 pb-0">
+      <div class="row align-items-center w-100 mx-0 px-0">
+        <div class="col-lg-7">
+          <h1 class="page-title">
+            Overview skins with lowest max float cap
+          </h1>
+        </div>
+        <div class="col-lg-5 ml-auto d-md-flex align-items-center">
+          <div class="mr-3">
+            <a class="btn btn-primary w-100" routerLink="collections">Collections</a>
+          </div>
+          <form class="input-icon my-3 my-lg-0 form-group w-100">
+            <input name="filterText" type="search" class="form-control header-search" placeholder="Filter by name"
+              tabindex="1" [(ngModel)]="filterText" (ngModelChange)="filter($event)">
+            <div class="input-icon-addon">
+              <i class="fe fe-search"></i>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <ng-container *ngIf="!isLoading; else loading">
+      <ul ngbNav #nav="ngbNav" [(activeId)]="currentTabId" class="nav-tabs mx-0 px-0" (navChange)="changeTab($event)">
+        <li [ngbNavItem]="1">
+          <a ngbNavLink><span class="text-rarity-1">Consumer</span></a>
+          <ng-template ngbNavContent>
+            <ng-container [ngTemplateOutlet]="itemsByRarityTmpl" [ngTemplateOutletContext]="{rarity: 1}">
+            </ng-container>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+          <a ngbNavLink><span class="text-rarity-2">Industrial</span></a>
+          <ng-template ngbNavContent>
+            <ng-container [ngTemplateOutlet]="itemsByRarityTmpl" [ngTemplateOutletContext]="{rarity: 2}">
+            </ng-container>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="3">
+          <a ngbNavLink><span class="text-rarity-3">Mil-Spec</span></a>
+          <ng-template ngbNavContent>
+            <ng-container [ngTemplateOutlet]="itemsByRarityTmpl" [ngTemplateOutletContext]="{rarity: 3}">
+            </ng-container>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="4">
+          <a ngbNavLink><span class="text-rarity-4">Restricted</span></a>
+          <ng-template ngbNavContent>
+            <ng-container [ngTemplateOutlet]="itemsByRarityTmpl" [ngTemplateOutletContext]="{rarity: 4}">
+            </ng-container>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="5">
+          <a ngbNavLink><span class="text-rarity-5">Classified</span></a>
+          <ng-template ngbNavContent>
+            <ng-container [ngTemplateOutlet]="itemsByRarityTmpl" [ngTemplateOutletContext]="{rarity: 5}">
+            </ng-container>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="6">
+          <a ngbNavLink><span class="text-rarity-6">Covert</span></a>
+          <ng-template ngbNavContent>
+            <ng-container [ngTemplateOutlet]="itemsByRarityTmpl" [ngTemplateOutletContext]="{rarity: 6}">
+            </ng-container>
+          </ng-template>
+        </li>
+      </ul>
+
+      <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    </ng-container>
+
+    <ng-template #itemsByRarityTmpl let-rarity="rarity">
+      <ng-container *ngIf="sortedItemsForDisplay.length; else noItemsTmpl">
+        <virtual-scroller #scroll [items]="sortedItemsForDisplay" [bufferAmount]="1" class="mt-3">
+          <div class="row mx-0" #container>
+            <ng-container *ngFor="let item of scroll.viewPortItems">
+              <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                  <img class="card-img-top" [src]="item.image || 'assets/unknown.png'" [attr.alt]="item.name">
+                  <div class="card-body d-flex flex-column pt-0">
+                    <div class="text-muted">
+                      {{item.min | number:'1.2-2'}} - {{item.max | number:'1.2-2'}}
+                    </div>
+                    <div class="progress mb-3">
+                      <div class="progress-bar bg-transparent" [ngStyle]="{'width.%': item.min*100}">
+                        &nbsp;
+                      </div>
+                      <div class="progress-bar bg-warning" [ngStyle]="{'width.%': item.max*100}">
+                        &nbsp;
+                      </div>
+                    </div>
+
+                    <h4 [ngClass]="'text-rarity-'+rarity">{{item.name}}</h4>
+                    <app-skin-price-table [item]="item"></app-skin-price-table>
+                    <div class="d-flex align-items-center pt-5 mt-auto">
+                      <div class="collection-img mr-3"
+                        [ngStyle]="{'background': 'url(assets/img/'+item.collection.key+'.png)'}">
+                      </div>
+                      <div>
+                        <div class="text-default">{{item.collection.name}}</div>
+                      </div>
+                      <div class="ml-auto">
+                        <a [attr.href]="'https://steamcommunity.com/market/search?appid=730&q='+item.name"
+                          target="_blank" rel="noopener noreferrer"><i class="fab fa-steam"></i></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </virtual-scroller>
+      </ng-container>
+    </ng-template>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="row">
+    <div class="col-12 mt-2">
+      <div class="loading-indicator my-0 mx-auto"></div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #noItemsTmpl>
+  <div class="col-12 text-center h3 mt-5">
+    No items for display
+  </div>
+</ng-template>

@@ -1,0 +1,21 @@
+<ng-template #resultTmpl let-result="result" let-term="term">
+  <div class="w-100 row">
+    <div class="col-4 p-0">
+      <img [src]="result.image || 'assets/unknown.png'" alt="" height="50">
+    </div>
+    <div class="col-8 p-0 pl-2 info-container">
+      <div>
+        <span class="text-right" [innerHTML]="result.name  | highlight : term"></span>
+      </div>
+      <div class="text-muted" *ngIf="showCollectionName">
+        {{result.collection.name}}
+      </div>
+
+    </div>
+  </div>
+</ng-template>
+
+<input [attr.placeholder]="allSkins.length+' items available'" [tabIndex]="tabIndex"
+  [ngStyle]="{'height': inputHeightPx+'px'}" type="text" class="form-control" [inputFormatter]="formatter"
+  [(ngModel)]="selectedSkinName" [ngbTypeahead]="searchSkin" [resultFormatter]="formatter"
+  (selectItem)="selectInputItem($event)" [resultTemplate]="!simple ? resultTmpl : null" />

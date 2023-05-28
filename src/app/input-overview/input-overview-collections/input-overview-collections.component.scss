@@ -1,0 +1,23 @@
+.block-link {
+    .collection-img {
+        display: block;
+        border-radius: 0;
+        // For some reason these styles get overriden and therefore don't work without !important
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        min-width: 5rem;
+        min-height: 5rem;
+        max-width: 10rem;
+        max-height: 7rem;
+        width: 100%;
+        transition: 0.4s all;
+    }
+
+
+    &:hover {
+        .collection-img {
+            transform: scale(1.3);
+        }
+    }
+}

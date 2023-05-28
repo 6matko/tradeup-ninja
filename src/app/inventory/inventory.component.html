@@ -1,0 +1,30 @@
+<ng-container *ngIf="inventory$ | async as inventory; else loadingTmpl">
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th></th>
+          <th scope="col">Item</th>
+          <th scope="col">Float</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let invItem of inventory; let i = index" app-inventory-item [item]="invItem" [order]="i"></tr>
+      </tbody>
+    </table>
+  </div>
+</ng-container>
+
+<ng-template #loadingTmpl>
+  <div class="row">
+    <div class="col-12 mt-5">
+      <div class="loading-indicator my-0 mx-auto"></div>
+    </div>
+    <div class="col-12 mt-5 col-lg-6 col-md-8 mx-auto text-center">
+      <div class="alert alert-info">
+        <div class="h4 mb-1">We are getting information about your inventory.</div>
+        <div>If its your first visit then it might take some time.</div>
+      </div>
+    </div>
+  </div>
+</ng-template>

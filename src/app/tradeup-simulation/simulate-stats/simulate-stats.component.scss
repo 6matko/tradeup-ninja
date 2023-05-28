@@ -1,0 +1,37 @@
+@import "../../../theme/theme-variables.scss";
+
+.simulation-card {
+    background-color: $gray-900;
+    color: $light;
+
+    .outcome-tag {
+        position: absolute;
+        left: 0;
+        top: 2px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    .outcome-img {
+        width: 90px;
+        height: auto;
+    }
+
+    .collection-img {
+        width: 50px;
+        height: auto;
+        opacity: 0.5;
+    }
+
+    .count-label {
+        position: absolute;
+        right: 15px;
+        bottom: 6px;
+        font-size: 14px;
+    }
+}
+
+.outcome-stamp {
+    height: 100%;
+}

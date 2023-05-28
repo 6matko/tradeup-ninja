@@ -1,0 +1,13 @@
+.floating-filter {
+    position: fixed;
+    left: 0;
+    right: 1rem;
+    bottom: 1rem;
+    // Higher by 1 than multiselect dropdown (it has z-index: 200)
+    z-index: 201;
+}
+
+.searching-loader {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}

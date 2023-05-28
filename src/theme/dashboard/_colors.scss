@@ -1,0 +1,9 @@
+@each $color,
+$value in $colors {
+    @include bg-variant(".bg-#{$color}-lightest", mix($value, #fff, 10%), true);
+    @include bg-variant(".bg-#{$color}-lighter", mix($value, #fff, 30%), true);
+    @include bg-variant(".bg-#{$color}-light", mix($value, #fff, 70%), true);
+    @include bg-variant(".bg-#{$color}-dark", mix($value, #000, 80%), true);
+    @include bg-variant(".bg-#{$color}-darker", mix($value, #000, 40%), true);
+    @include bg-variant(".bg-#{$color}-darkest", mix($value, #000, 20%), true);
+}

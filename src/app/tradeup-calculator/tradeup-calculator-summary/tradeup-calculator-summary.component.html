@@ -1,0 +1,78 @@
+<div class="preview">
+  <div class="card best-outcome p-0">
+    <div class="card-status" [ngClass]="'bg-rarity-'+tradeupSummary.mostExpensivePrizeItem.rarity.value">
+    </div>
+    <div class="card-body text-center">
+      <div class="card-category">
+        <div *ngIf="tradeupSettings.stattrak">
+          <span class="tag tag-orange">STATTRAK</span>
+        </div>
+        <div>
+          {{tradeupSummary.mostExpensivePrizeItem.name}}
+        </div>
+        <div [ngClass]="'text-rarity-'+tradeupSummary.mostExpensivePrizeItem.rarity.value">
+          {{tradeupSummary.mostExpensivePrizeItem.rarity.name}}
+        </div>
+        <div class="text-muted outcome-float">
+          {{ tradeupSummary.mostExpensiveFloat | number: '1.7-7' | floatToCondition }}
+        </div>
+      </div>
+      <div class="position-relative">
+        <div class="collection-bg"
+          [style.backgroundImage]="'url(assets/img/'+ tradeupSummary.mostExpensivePrizeItem.collection.key +'.png)'">
+        </div>
+        <img class="preview-img" [src]="tradeupSummary.mostExpensivePrizeItem.image || 'assets/unknown.png'" />
+      </div>
+      <ul class="list-unstyled best-outcome-data">
+        <li class="d-flex justify-content-between">
+          <strong class="h3 mb-0 text-primary" placement="top"
+            [ngbTooltip]="'Price of outcome '+tradeupSettings.withoutSteamTax ? 'Without' : 'With'+' Steam TAX (13%)'">
+            {{tradeupSummary.mostExpensivePrize | currency:'USD':'symbol':'1.2-2'}}
+          </strong>
+          <strong class="h3 mb-0 text-pink">
+            {{tradeupSummary.mostExpensiveOdds | percent:'1.2-2'}}
+          </strong>
+        </li>
+        <li>
+          <hr class="divider mb-3" />
+        </li>
+        <li>
+          <div class="h4 d-inline-block" placement="top"
+            ngbTooltip="Profit that you will receive after selling this item for its price (Without Steam TAX, 13%). Formula: Expected Value - Cost">
+            Profit: <b
+              [ngClass]="tradeupSummary.profit > 0 ? 'text-success' : 'text-danger'">{{tradeupSummary.profit | currency:'USD':'symbol':'1.2-2'}}
+              <small class="text-secondary">({{tradeupSummary.profitPercentage | percent: '1.2-2'}})</small></b>
+          </div>
+        </li>
+        <li>
+          <div class="h5">Trade up cost: <b>{{tradeupSummary.cost | currency:'USD':'symbol':'1.2-2'}}</b>
+          </div>
+        </li>
+        <li>
+          <div class="h5">Expected value: <b>{{tradeupSummary.expectedValue | currency:'USD':'symbol':'1.2-2'}}</b>
+          </div>
+        </li>
+        <li>
+          <hr class="divider mb-3" />
+        </li>
+        <li>
+          <div class="h4">
+            Odds below cost: <b
+              [class.text-success]="tradeupSummary.outcomeSummary.oddsBelowCost < 0.02">{{tradeupSummary.outcomeSummary.oddsBelowCost | percent}}</b>
+          </div>
+        </li>
+        <li>
+          <div class="h6">Items below cost: <b>{{tradeupSummary.outcomeSummary.outcomeItemCountBelowCost}} /
+              {{tradeupSummary.outcomeSummary.outcomes.length}}
+              ({{(tradeupSummary.outcomeSummary.outcomeItemCountBelowCost / tradeupSummary.outcomeSummary.outcomes.length) | percent: '1.2-2'}})</b>
+          </div>
+        </li>
+      </ul>
+      <div *ngIf="(1 - tradeupSummary.outcomeSummary.oddsBelowCost) as successOdds">
+        <div class="alert m-0 success-odds"
+          [ngClass]="{'alert-success': successOdds >= 0.7, 'alert-danger': successOdds <= 0.4, 'alert-warning': successOdds < 0.7 && successOdds > 0.4}">
+          Success odds: <b>{{ successOdds | percent}}</b></div>
+      </div>
+    </div>
+  </div>
+</div>

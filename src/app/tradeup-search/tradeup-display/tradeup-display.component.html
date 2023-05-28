@@ -1,0 +1,339 @@
+<div class="card found-tradeup">
+  <div class="tradeup-number">{{ tradeupNr }}</div>
+  <div class="row">
+    <div class="preview col-md-4">
+      <div class="card best-outcome p-0 m-0">
+        <div
+          class="card-status"
+          [ngClass]="'bg-rarity-' + tradeup.tradeupSummary.mostExpensivePrizeItem.rarity.value"
+        ></div>
+        <div class="card-body text-center">
+          <div class="card-category">
+            <div *ngIf="stattrak">
+              <span class="tag tag-orange">STATTRAK</span>
+            </div>
+            <div>
+              {{ tradeup.tradeupSummary.mostExpensivePrizeItem.name }}
+            </div>
+            <div [ngClass]="'text-rarity-' + tradeup.tradeupSummary.mostExpensivePrizeItem.rarity.value">
+              {{ getSkinRarityName(tradeup.tradeupSummary.mostExpensivePrizeItem.rarity.value) }}
+            </div>
+            <div class="text-muted outcome-float">
+              {{ tradeup.tradeupSummary.mostExpensiveFloat | number: '1.7-7' | floatToCondition }}
+            </div>
+          </div>
+          <div class="position-relative">
+            <div
+              class="collection-bg"
+              [style.backgroundImage]="
+                'url(assets/img/' +
+                (previewSkin?.collection.key || tradeup.tradeupSummary.mostExpensivePrizeItem.collection.key) +
+                '.png)'
+              "
+            ></div>
+            <img
+              class="preview-img"
+              [src]="previewSkin?.image || tradeup.tradeupSummary.mostExpensivePrizeItem.image || 'assets/unknown.png'"
+            />
+          </div>
+          <ul class="list-unstyled best-outcome-data">
+            <li class="d-flex justify-content-between">
+              <strong
+                class="h3 mb-0 text-primary"
+                placement="top"
+                ngbTooltip="Price of outcome Without Steam TAX (13%)"
+              >
+                ${{ tradeup.tradeupSummary.mostExpensivePrize | number: '1.2-2' }}
+              </strong>
+              <strong class="h3 mb-0 text-pink">
+                {{ tradeup.tradeupSummary.mostExpensiveOdds | percent: '1.2-2' }}
+              </strong>
+            </li>
+            <li>
+              <hr class="divider mb-3" />
+            </li>
+            <li>
+              <div
+                class="h4 d-inline-block"
+                placement="top"
+                ngbTooltip="Profit that you will receive after selling this item for its price (Without Steam TAX, 13%). Formula: Expected Value - Cost"
+              >
+                Profit:
+                <b [ngClass]="tradeup.tradeupSummary.profit >= 0 ? 'text-success' : 'text-danger'"
+                  >${{ tradeup.tradeupSummary.profit | number: '1.2-2' }}
+                  <small class="text-secondary"
+                    >({{ tradeup.tradeupSummary.profitPercentage | percent: '1.2-2' }})</small
+                  ></b
+                >
+              </div>
+            </li>
+            <li>
+              <div class="h5">
+                Expected value: <b>${{ tradeup.tradeupSummary.expectedValue | number: '1.2-2' }}</b>
+              </div>
+            </li>
+            <li>
+              <hr class="divider mb-3" />
+            </li>
+            <li>
+              <div class="h4">
+                Odds below cost:
+                <b [class.text-success]="tradeup.tradeupSummary.outcomeSummary.oddsBelowCost < 0.02">{{
+                  tradeup.tradeupSummary.outcomeSummary.oddsBelowCost | percent
+                }}</b>
+              </div>
+            </li>
+            <li>
+              <div class="h6">
+                Items below cost:
+                <b
+                  >{{ tradeup.tradeupSummary.outcomeSummary.outcomeItemCountBelowCost }} /
+                  {{ tradeup.tradeupSummary.outcomeSummary.outcomes.length }}
+                  ({{
+                    tradeup.tradeupSummary.outcomeSummary.outcomeItemCountBelowCost /
+                      tradeup.tradeupSummary.outcomeSummary.outcomes.length | percent: '1.2-2'
+                  }})</b
+                >
+              </div>
+            </li>
+          </ul>
+          <div *ngIf="1 - tradeup.tradeupSummary.outcomeSummary.oddsBelowCost as successOdds">
+            <div
+              class="alert m-0 success-odds"
+              [ngClass]="{
+                'alert-success': successOdds >= 0.7,
+                'alert-danger': successOdds <= 0.4,
+                'alert-warning': successOdds < 0.7 && successOdds > 0.4
+              }"
+            >
+              Success odds: <b>{{ successOdds | percent }}</b>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="details col-md-8">
+      <h3
+        class="product-title"
+        [ngClass]="{
+          alert: tradeup.tradeupSummary.outcomeSummary.oddsBelowCost <= 0.2,
+          'alert-success': tradeup.tradeupSummary.outcomeSummary.oddsBelowCost <= 0.02,
+          'alert-warning':
+            tradeup.tradeupSummary.outcomeSummary.oddsBelowCost > 0.02 &&
+            tradeup.tradeupSummary.outcomeSummary.oddsBelowCost <= 0.2
+        }"
+      >
+        Cost: ${{ tradeup.tradeupSummary.cost | number: '1.2-2' }}
+        <button
+          class="btn btn-success btn-sm"
+          type="button"
+          (click)="addToResult(tradeup)"
+          ngbTooltip="Add tradeup to results as &#34;Uncompleted&#34;"
+          triggers="click:blur"
+        >
+          <i class="fas fa-plus"></i>
+        </button>
+        <button id="openSimulation" class="btn btn-info btn-sm" type="button" (click)="simulateTradeup(tradeup)">
+          <i class="fas fa-forward" ngbTooltip="Simulate tradeup" triggers="click:blur"></i>
+        </button>
+        <button
+          id="shareTradeup"
+          class="btn btn-primary btn-sm"
+          type="button"
+          (click)="createShareLink()"
+          *ngIf="!hideShare"
+          [ngbPopover]="shareTradeupPopover"
+          popoverClass="share-popover alert alert-info p-2"
+          [autoClose]="'outside'"
+        >
+          <i class="fas fa-share" ngbTooltip="Share tradeup"></i>
+        </button>
+        <button id="openInCalculator" class="btn btn-primary btn-sm" type="button" (click)="openInCalculator()">
+          <i class="fas fa-calculator" ngbTooltip="Open in calculator"></i>
+        </button>
+      </h3>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Qty.</th>
+              <th scope="col">
+                Item (<span [ngClass]="'text-rarity-' + tradeup.items[0].item.rarity.value">{{
+                  getSkinRarityName(tradeup.items[0].item.rarity.value)
+                }}</span
+                >)
+              </th>
+              <th scope="col">Price</th>
+              <th scope="col">Float</th>
+              <th scope="col">Volume</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tradeupInput of distinctInputItems">
+              <td>{{ tradeupInput.amount }}x</td>
+              <td (mouseover)="previewSkin = tradeupInput.item" (mouseout)="previewSkin = undefined">
+                <img [src]="tradeupInput.item.image || 'assets/unknown.png'" class="mr-2" />
+                <span [ngClass]="'text-rarity-' + tradeupInput.item.rarity.value">{{ tradeupInput.item.name }}</span>
+                <span>
+                  <ng-container
+                    [ngTemplateOutlet]="linkToSteam"
+                    [ngTemplateOutletContext]="{
+                      itemName: tradeupInput.item.name,
+                      float: tradeupInput.float,
+                      stattrak: stattrak
+                    }"
+                  >
+                  </ng-container>
+                </span>
+                <div
+                  class="progress progress-float mt-1"
+                  placement="bottom"
+                  [ngbTooltip]="
+                    'Float range of ' +
+                    tradeupInput.item.name +
+                    ': ' +
+                    (tradeupInput.item.min | number: '1.2-2') +
+                    ' - ' +
+                    (tradeupInput.item.max | number: '1.2-2')
+                  "
+                >
+                  <div class="float-value">
+                    {{ tradeupInput.item.min | number: '1.2-2' }} - {{ tradeupInput.item.max | number: '1.2-2' }}
+                  </div>
+                  <div class="progress-bar bg-transparent" [ngStyle]="{ 'width.%': tradeupInput.item.min * 100 }">
+                    &nbsp;
+                  </div>
+                  <div class="progress-bar bg-warning" [ngStyle]="{ 'width.%': tradeupInput.item.max * 100 }">
+                    &nbsp;
+                  </div>
+                </div>
+              </td>
+              <td>${{ getSkinPrice(tradeupInput.item, tradeupInput.float) | number: '1.2-2' }}</td>
+              <td>{{ tradeupInput.float | number: '1.7-7' | floatToCondition }}</td>
+              <td>{{ getVolume(tradeupInput.item, tradeupInput.float) }}</td>
+            </tr>
+            <tr>
+              <td colspan="4">Average float:</td>
+              <td>
+                <b>{{ tradeup.tradeupSummary.averageFloat | number: '1.7-7' }}</b>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="table-responsive">
+        <table class="table outcome-table card-table table-vcenter table-hover">
+          <thead>
+            <tr>
+              <td></td>
+              <td></td>
+              <td class="text-muted d-none d-md-table-cell text-nowrap p-0 font-weight-bold">Outcome</td>
+              <td class="text-right text-muted d-none d-md-table-cell text-nowrap p-0 font-weight-bold">Float</td>
+              <td class="text-right text-muted d-none d-md-table-cell text-nowrap p-0 font-weight-bold">
+                SCM Price | Without Tax
+              </td>
+              <td class="text-right text-muted d-none d-md-table-cell text-nowrap p-0 font-weight-bold">Volume</td>
+              <td class="text-right p-0 font-weight-bold">Odds</td>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let possibleOutcomes of tradeup.tradeupSummary.outcomeSummary.outcomes">
+              <ng-container
+                *ngIf="
+                  getSkinPrice(
+                    possibleOutcomes.item,
+                    possibleOutcomes.float,
+                    compareWithoutSteamTax
+                  ) as skinPriceWithoutTax
+                "
+              >
+                <tr [class.profit-below]="skinPriceWithoutTax - tradeup.tradeupSummary.cost < 0">
+                  <td>
+                    <img [src]="possibleOutcomes.item.image || 'assets/unknown.png'" class="w-8" />
+                  </td>
+                  <td class="p-0">
+                    <img
+                      [src]="'assets/img/' + possibleOutcomes.item.collection.key + '.png'"
+                      class="w-6"
+                      [ngbTooltip]="possibleOutcomes.item.collection.name"
+                    />
+                  </td>
+                  <td class="p-0">
+                    {{ possibleOutcomes.item.name }}
+                    <span *ngIf="possibleOutcomes.item.variation">({{ possibleOutcomes.item.variation }})</span>
+                    <span *ngIf="stattrak" class="tag tag-orange">STATTRAK</span>
+                    <span>
+                      <ng-container
+                        [ngTemplateOutlet]="linkToSteam"
+                        [ngTemplateOutletContext]="{
+                          itemName: possibleOutcomes.item.name,
+                          float: possibleOutcomes.float,
+                          stattrak: stattrak
+                        }"
+                      >
+                      </ng-container>
+                    </span>
+                  </td>
+                  <td class="text-right text-muted d-none d-md-table-cell text-nowrap p-0">
+                    {{ possibleOutcomes.float | number: '1.7-7' | floatToCondition }}
+                  </td>
+                  <td class="text-right text-muted d-none d-md-table-cell text-nowrap p-0">
+                    <span class="market-price"
+                      >${{ getSkinPrice(possibleOutcomes.item, possibleOutcomes.float) | number: '1.2-2' }}</span
+                    >
+                    |
+                    <span class="price-no-tax text-success font-weight-bold"
+                      >${{ skinPriceWithoutTax | number: '1.2-2' }}</span
+                    >
+                  </td>
+                  <td class="text-right text-muted d-none d-md-table-cell text-nowrap p-0">
+                    {{ getVolume(possibleOutcomes.item, possibleOutcomes.float) || 0 }}
+                  </td>
+                  <td class="text-right">
+                    <strong
+                      >{{ possibleOutcomes.odds | percent: '1.2-2' }}
+                      <ng-container *ngIf="skinPriceWithoutTax - tradeup.tradeupSummary.cost as profit">
+                        (<span [ngClass]="profit >= 0 ? 'text-success' : 'text-danger'"
+                          >${{ skinPriceWithoutTax - tradeup.tradeupSummary.cost | number: '1.2-2' }}</span
+                        >)
+                      </ng-container>
+                    </strong>
+                  </td>
+                </tr>
+              </ng-container>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #linkToSteam let-itemName="itemName" let-float="float" let-stattrak="stattrak">
+  <a
+    [attr.href]="
+      'https://steamcommunity.com/market/listings/730/' +
+      (stattrak ? 'StatTrak™ ' : '') +
+      itemName +
+      ' ' +
+      (float | floatToCondition: 'fullwithout')
+    "
+    target="_blank"
+    rel="noopener noreferrer"
+    ><i class="fab fa-steam"></i
+  ></a>
+</ng-template>
+
+<ng-template #shareTradeupPopover>
+  <h4 class="text-white mb-2">Share this tradeup via following URL</h4>
+  <div class="leading-tight text-white share-url">
+    {{ shareUrl }}
+  </div>
+  <div class="btn-list mt-3">
+    <button class="btn btn-success btn-block" type="button" (click)="copyShareLink()">{{ copyLinkDisplayText }}</button>
+  </div>
+</ng-template>

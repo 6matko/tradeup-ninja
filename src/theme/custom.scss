@@ -1,0 +1,328 @@
+@import "./theme-variables";
+
+.divider {
+  margin-top: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.desc {
+  @include themify($themes) {
+    color: themed("footerTextColor");
+  }
+}
+
+.link {
+  transition: 0.3s ease;
+  cursor: pointer;
+
+  @include themify($themes) {
+    color: themed("highlightedColor");
+  }
+
+  &:hover {
+    text-decoration: none;
+
+    @include themify($themes) {
+      color: themed("highlightedSecondaryColor");
+    }
+  }
+}
+
+.loading-indicator,
+.loading-indicator::after {
+  border-radius: 50%;
+  width: 10em;
+  height: 10em;
+}
+
+.loading-indicator {
+  margin: 60px auto;
+  font-size: 10px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: 1.1em solid rgba(79, 138, 238, 0.2);
+  border-right: 1.1em solid rgba(79, 138, 238, 0.2);
+  border-bottom: 1.1em solid rgba(79, 138, 238, 0.2);
+  border-left: 1.1em solid #4f8aee;
+  transform: translateZ(0);
+  animation: load8 1.1s infinite linear;
+}
+
+@-webkit-keyframes load8 {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes load8 {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.text-rarity-1 {
+  color: $consumer;
+}
+
+.text-rarity-2 {
+  color: $industrial;
+}
+
+.text-rarity-3 {
+  color: $milspecs;
+}
+
+.text-rarity-4 {
+  color: $restricted;
+}
+
+.text-rarity-5 {
+  color: $classified;
+}
+
+.text-rarity-6 {
+  color: $covert;
+}
+
+.bg-rarity-1 {
+  background-color: $consumer;
+}
+
+.bg-rarity-2 {
+  background-color: $industrial;
+}
+
+.bg-rarity-3 {
+  background-color: $milspecs;
+}
+
+.bg-rarity-4 {
+  background-color: $restricted;
+}
+
+.bg-rarity-5 {
+  background-color: $classified;
+}
+
+.bg-rarity-6 {
+  background-color: $covert;
+}
+
+.ng-dropdown-panel {
+  z-index: 200;
+}
+
+.progress {
+  @include themify($themes) {
+    background-color: themed("borderColor");
+  }
+}
+
+.item-popover {
+  @include themify($themes) {
+    background-color: themed("dropdownBg");
+    color: themed("dropdownTextColor");
+    border-color: themed("borderColor");
+
+    .arrow {
+      &:after {
+        border-top-color: themed("borderColor");
+        border-bottom-color: themed("borderColor");
+      }
+
+      &:before {
+        border-top-color: themed("borderColor");
+        border-bottom-color: themed("borderColor");
+      }
+    }
+
+    .popover-header {
+      background-color: themed("dropdownBg");
+      color: themed("dropdownTextColor");
+      border-bottom-color: darken(themed("dropdownBg"), 20%);
+    }
+  }
+}
+
+.stats-card {
+  @include themify($themes) {
+    background-color: themed("bgColor");
+  }
+}
+
+.floating-overview {
+  @include themify($themes) {
+    background: themed("bgColor");
+  }
+}
+
+.ngx-date-picker-calendar-container {
+  @include themify($themes) {
+    background-color: themed("cardBg");
+    border-color: themed("borderColor");
+    transition: 0.3s ease;
+
+    .day-background-upper {
+      background: transparent;
+      color: themed("dropdownTextColor");
+
+      &.is-visible {
+        &:hover {
+          background-color: darken(themed("bgColor"), 10%);
+          color: themed("textColor");
+        }
+      }
+
+      &.is-prev-month {
+        background: transparent;
+        color: themed("mutedColor");
+      }
+
+      &.is-in-range {
+        background-color: $primary;
+        color: $white;
+
+        &.is-prev-month {
+          background-color: $primary;
+        }
+
+        &:hover {
+          background-color: darken($primary, 10%);
+          color: $white;
+        }
+      }
+
+      &.is-selected {
+        background-color: $warning;
+        color: $white;
+        border-color: $black;
+
+        &:hover {
+          background-color: darken($warning, 10%);
+          color: $white;
+        }
+      }
+    }
+
+    .main-calendar-day-names {
+      color: $primary;
+    }
+
+    .ngx-date-picker-navbar-item {
+      i {
+        transition: 0.3s ease;
+        border-color: $secondary;
+      }
+
+      &:hover {
+        i {
+          border-color: darken($primary, 10%);
+        }
+      }
+    }
+
+    .main-calendar-years {
+      .year-unit {
+        &.is-selected {
+          background-color: $primary;
+        }
+
+        &:hover {
+          background-color: darken($primary, 10%);
+        }
+      }
+    }
+
+    .main-calendar-months {
+      .month-unit {
+        &.is-selected {
+          background-color: $primary;
+        }
+
+        &:hover {
+          background-color: darken($primary, 10%);
+        }
+      }
+    }
+  }
+}
+
+.search-highlight {
+  color: $danger;
+  font-weight: bold;
+}
+
+.font-size-12 {
+  font-size: 12px;
+}
+
+.popover.share-popover {
+  .arrow::before,
+  .arrow::after {
+    border-top-color: $info;
+    border-bottom-color: $info;
+  }
+}
+
+::ng-deep ngb-popover-window.share-popover {
+  > .arrow {
+    &:before {
+      border-top-color: $info;
+      border-bottom-color: $info;
+    }
+
+    &:after {
+      border-top-color: $info;
+      border-bottom-color: $info;
+    }
+  }
+}
+
+.share-popover {
+  .popover-body {
+    .share-url {
+      font-size: 12px;
+    }
+  }
+}
+
+.text-shake {
+  animation-name: shake;
+  animation-duration: 0.3s;
+  animation-iteration-count: 1;
+  animation-direction: alternate;
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(3px, 0);
+  }
+
+  20% {
+    transform: translate(-3px, 0);
+  }
+
+  40% {
+    transform: translate(3px, 0);
+  }
+
+  60% {
+    transform: translate(-3px, 0);
+  }
+
+  80% {
+    transform: translate(3px, 0);
+  }
+
+  100% {
+    transform: translate(-3px, 0);
+  }
+}

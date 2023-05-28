@@ -1,0 +1,7 @@
+@function px2rem($value) {
+    @return $value/16px * 1rem;
+}
+
+@function themed($key) {
+    @return map-get($theme-map, $key);
+}

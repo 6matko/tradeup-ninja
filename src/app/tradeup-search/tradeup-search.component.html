@@ -1,0 +1,111 @@
+<div class="my-3 my-md-5">
+  <div class="px-5">
+    <div class="page-header">
+      <h1 class="page-title">
+        Search for best tradeups
+      </h1>
+    </div>
+    <div class="row">
+      <div class="col-lg-3 order-lg-1 mb-4">
+        <div class="dimmer" [class.active]="!storedItems">
+          <div class="loader"></div>
+          <div class="dimmer-content">
+            <div class="row">
+              <div class="col-md-6">
+                <button
+                  class="btn btn-block btn-success"
+                  [disabled]="!storedItems"
+                  (click)="start()"
+                  title="Start searching"
+                >
+                  <i class="fe fe-play mr-2"></i>Start
+                </button>
+              </div>
+              <div class="col-md-6">
+                <button
+                  class="btn btn-block btn-danger"
+                  [disabled]="!storedItems"
+                  (click)="stop()"
+                  title="Stop searching"
+                >
+                  <i class="fas fa-stop mr-2"></i>Stop
+                </button>
+              </div>
+            </div>
+            <div class="list-group list-group-transparent mb-0">
+              <app-tradeup-settings
+                [settings]="searchSettings"
+                (settingsChanged)="saveSettings($event)"
+                [collections]="collectionsForSearch"
+                [skinsForSelect]="skinsForSelect"
+                [lastUpdate]="storedItems?.lastUpdate"
+              >
+              </app-tradeup-settings>
+            </div>
+            <div class="d-none d-lg-block mt-0" *ngIf="messages.length || stickyMessages.length">
+              <button class="btn btn-info btn-block btn-lg mb-2" (click)="clearLog()" title="Clear log">
+                Clear log
+              </button>
+              <div class="w-100">
+                <app-tradeup-output [messages]="messages" [stickyMessages]="stickyMessages"></app-tradeup-output>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-9">
+        <div *ngIf="isLoading">
+          <div class="display-4">
+            <div class="loading-indicator searching-loader"></div>
+            <div class="text-muted text-center">Searching...</div>
+          </div>
+          <div class="mt-3" *ngIf="searchProgress?.total; else hiddenProgreessBar">
+            <ngb-progressbar
+              type="success"
+              [value]="searchProgress.current"
+              [max]="searchProgress.total"
+              [striped]="true"
+              [animated]="true"
+            >
+            </ngb-progressbar>
+          </div>
+        </div>
+        <ng-container *ngIf="sortedTradeups.length; else noTradeups">
+          <div class="col-12" *ngFor="let bestTradeup of sortedTradeups; let i = index">
+            <app-tradeup-display
+              [tradeup]="bestTradeup"
+              [stattrak]="searchSettings.stattrak"
+              [tradeupNr]="i + 1"
+              [compareWithoutSteamTax]="searchSettings.compareWithoutTax"
+              (simulate)="simulateTradeup($event)"
+            >
+            </app-tradeup-display>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #hiddenProgreessBar>
+  <ngb-progressbar class="invisible" type="success" [value]="0" [max]="0"> </ngb-progressbar>
+</ng-template>
+
+<ng-template #noTradeups>
+  <div class="col-12 mt-4" *ngIf="!isLoading">
+    <div class="text-center h3">
+      No tradeups were found
+    </div>
+  </div>
+</ng-template>
+
+<div class="floating-filter" *ngIf="sortedTradeups.length">
+  <div class="text-right">
+    <div ngbDropdown placement="top-right" class="d-inline-block">
+      <button class="btn btn-outline-primary" id="filter-dropdown" ngbDropdownToggle>Filter</button>
+      <div ngbDropdownMenu aria-labelledby="filter-dropdown">
+        <app-tradeup-filter (filter)="sortTradeups($event)"></app-tradeup-filter>
+      </div>
+    </div>
+  </div>
+</div>

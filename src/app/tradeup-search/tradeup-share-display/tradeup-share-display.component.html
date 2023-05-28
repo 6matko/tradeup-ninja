@@ -1,0 +1,50 @@
+<div class="my-3 my-md-5">
+  <div class="px-5">
+    <div class="page-header" [class.mb-0]="error">
+      <h1 class="page-title">
+        Shared tradeup&nbsp;
+        <span *ngIf="tradeupName" class="lead tradeup-name">{{tradeupName}}</span>
+        <div *ngIf="tradeupInfo?.shared" class="text-muted share-date">
+          {{tradeupInfo.shared | date:'H:mm, MMMM d, y (z)'}}
+        </div>
+      </h1>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="dimmer" [class.active]="isLoading">
+          <div class="loader"></div>
+          <div class="dimmer-content">
+            <div class="row">
+              <div class="col-12" *ngIf="!error && tradeup && tradeupInfo; else errorTmpl">
+                <app-tradeup-display [tradeup]="tradeup" [stattrak]="tradeupInfo.stattrak"
+                  [compareWithoutSteamTax]="true" (simulate)="simulateTradeup($event)" [hideShare]="true">
+                </app-tradeup-display>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #errorTmpl>
+  <div class="container" *ngIf="!isLoading && error">
+    <div class="row">
+      <div class="col-12 text-center mb-4">
+        <img src="assets/logo.svg" height="300" class="logo" alt="Tradeup ninja logo">
+      </div>
+      <div class="col-12">
+        <div class="alert alert-danger text-center">
+          {{error}}
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="text-center mt-2">
+          <button class="btn btn-primary btn-lg text-uppercase" type="button" routerLink="/search">Back to
+            search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

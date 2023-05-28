@@ -1,0 +1,40 @@
+<div id="customPriceModal" class="modal-content">
+  <form [formGroup]="customPriceForm" (submit)="savePrice()">
+    <div class="modal-header">
+      <h5 class="modal-title">Set custom price </h5>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+      </button>
+    </div>
+    <div class="modal-body pt-0">
+      <div class="row mt-3">
+        <div class="col-12">
+          <div class="text-center mx-auto">
+            <img [src]="currentItem.image || 'assets/unknown.png'" height="100" [attr.alt]="currentItem.name">
+            <div class="h5 mt-3 mb-5">
+              {{currentItem.name}} {{currentItemFloat | floatToCondition:'fullwithout'}}
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-group" [class.has-danger]="customPriceForm.get('priceBeforeTax').invalid">
+            <label class="form-control-label" for="priceBeforeTax">New price before tax (13% Steam tax will be applied
+              separately)</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">$</span>
+              </div>
+              <input type="number" min="0" step="0.01" class="form-control" formControlName="priceBeforeTax"
+                aria-label="Currency for display" id="priceBeforeTax"
+                [class.is-invalid]="customPriceForm.get('priceBeforeTax').invalid" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal"
+        (click)="activeModal.dismiss()">Close</button>
+      <button type="submit" class="btn btn-primary" [disabled]="customPriceForm.invalid">Set new price</button>
+    </div>
+  </form>
+</div>

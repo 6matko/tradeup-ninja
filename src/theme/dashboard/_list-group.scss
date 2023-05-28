@@ -1,0 +1,31 @@
+.list-group-item {
+    &.active {
+        color: $primary !important;
+
+        .icon {
+            color: inherit !important;
+        }
+    }
+}
+
+.list-group-transparent {
+    .list-group-item {
+        background: none;
+        border: 0;
+        padding: .5rem 1rem;
+        border-radius: 3px;
+
+        @include themify($themes) {
+            color: themed('textColor');
+        }
+
+        &.active {
+            background: rgba($primary, .06);
+            font-weight: 600;
+        }
+
+        &:hover {
+            background: rgba($primary, .06);
+        }
+    }
+}

@@ -1,0 +1,45 @@
+<div class="row">
+  <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6" *ngFor="let simOutcome of simulatedOutcomes; let i = index">
+    <div class="card mb-4 simulation-card">
+      <div class="card-status bg-rarity-{{simOutcome.item?.rarity.value}}"></div>
+      <div class="card-body">
+        <span class="tag outcome-nr-tag">#{{i+1}}</span>
+        <div class="mb-1 row justify-content-between">
+          <div class="col-md-6">
+            <img [src]="simOutcome.item.image || 'assets/unknown.png'" [attr.alt]="simOutcome.item.name"
+              class="outcome-img">
+          </div>
+          <div class="col-md-6 text-right">
+            <img [src]="'assets/img/'+simOutcome.item.collection.key+'.png'"
+              [attr.alt]="simOutcome.item.collection.name" class="collection-img">
+          </div>
+        </div>
+        <h4 class="card-title mb-0">{{simOutcome.item.name}}</h4>
+        <div class="mt-0 d-flex align-items-center">
+          <div>
+            <div class="text-muted">
+              {{simOutcome.float | number: '1.7-7' | floatToCondition}}
+            </div>
+            <div class="text-info">
+              {{simOutcome.odds | percent: '1.2-2'}}
+            </div>
+          </div>
+          <div class="ml-auto">
+            <div class="profit-label">Profit</div>
+            <ng-container
+              *ngIf="(simOutcome.item | priceFromFloat:simOutcome.float:true:stattrak) - cost as profit; else noProfit">
+              <div class="h2 m-0">
+                <strong [class.text-success]="profit > 0" [class.text-danger]="profit < 0">
+                  {{profit | currency:'USD':'symbol':'1.2-2'}}
+                </strong>
+              </div>
+            </ng-container>
+            <ng-template #noProfit>
+              <strong class="text-danger">$0.00</strong>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

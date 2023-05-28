@@ -1,0 +1,165 @@
+<div class="table-responsive">
+  <table class="table table-hover table-outline table-vcenter text-nowrap card-table">
+    <thead>
+      <tr>
+        <th class="text-center w-1"></th>
+        <th></th>
+        <th class="text-muted d-none d-md-table-cell text-nowrap font-weight-bold">Outcome</th>
+        <th class="text-right text-muted d-none d-md-table-cell text-nowrap font-weight-bold">Float</th>
+        <th class="text-right text-muted d-none d-md-table-cell text-nowrap font-weight-bold">
+          SCM Price | Without Tax
+        </th>
+        <th class="text-right text-muted d-none d-md-table-cell text-nowrap font-weight-bold">Volume</th>
+        <th class="text-right font-weight-bold">Odds</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let possibleOutcome of tradeupSummary.outcomeSummary.outcomes">
+        <ng-container
+          [ngTemplateOutlet]="outcomeRowTmpl"
+          [ngTemplateOutletContext]="{
+            skinPriceWithoutTax: getSkinPrice(possibleOutcome.item, possibleOutcome.float, true)
+          }"
+        >
+        </ng-container>
+
+        <ng-template #outcomeRowTmpl let-skinPriceWithoutTax="skinPriceWithoutTax">
+          <tr
+            [class.profit-below]="skinPriceWithoutTax - tradeupSummary.cost < 0"
+            [class.worst-outcome]="possibleOutcome.item.name === tradeupSummary.cheapestPrizeItem.name"
+            [class.best-outcome]="possibleOutcome.item.name === tradeupSummary.mostExpensivePrizeItem.name"
+          >
+            <td class="text-center position-relative">
+              <div
+                class="d-block skin-image position-relative"
+                [ngStyle]="{ 'background-image': 'url(' + (possibleOutcome.item.image || 'assets/unknown.png') + ')' }"
+                container="body"
+                popoverClass="item-popover"
+                [ngbPopover]="itemPreviewTmplBody"
+                [popoverTitle]="possibleOutcome.item.name"
+                triggers="mouseenter:mouseleave"
+              ></div>
+              <ng-template #itemPreviewTmplBody>
+                <div class="text-center mx-auto">
+                  <img
+                    [src]="possibleOutcome.item.image || 'assets/unknown.png'"
+                    class="preview-img"
+                    [attr.alt]="possibleOutcome.item.name"
+                  />
+                </div>
+                <div class="text-center text-rarity-{{ possibleOutcome.item.rarity.value }}">
+                  {{ possibleOutcome.item.rarity.name }}
+                </div>
+                <div>
+                  <app-skin-price-table
+                    [item]="possibleOutcome.item"
+                    [showHeader]="false"
+                    [showNormalPrices]="!tradeupSettings.stattrak"
+                    [showStattrakPrices]="tradeupSettings.stattrak"
+                  >
+                  </app-skin-price-table>
+                </div>
+              </ng-template>
+            </td>
+            <td class="p-0">
+              <img
+                [src]="'assets/img/' + possibleOutcome.item.collection.key + '.png'"
+                class="w-6"
+                [ngbTooltip]="possibleOutcome.item.collection.name"
+              />
+            </td>
+            <td class="p-0">
+              <div>
+                {{ possibleOutcome.item.name }}
+                <span *ngIf="possibleOutcome.item.variation">({{ possibleOutcome.item.variation }})</span>
+
+                <span *ngIf="tradeupSettings?.stattrak" class="tag tag-orange">STATTRAK</span>
+                <span>
+                  <ng-container
+                    [ngTemplateOutlet]="linkToSteam"
+                    [ngTemplateOutletContext]="{
+                      itemName: possibleOutcome.item.name,
+                      float: possibleOutcome.float,
+                      stattrak: tradeupSettings?.stattrak
+                    }"
+                  >
+                  </ng-container>
+                </span>
+              </div>
+              <ng-container *ngIf="tradeupSummary.outcomeSummary.outcomes.length > 1">
+                <div
+                  *ngIf="
+                    possibleOutcome.item.name === tradeupSummary.mostExpensivePrizeItem.name &&
+                    possibleOutcome.item.variation === tradeupSummary.mostExpensivePrizeItem.variation
+                  "
+                  class="text-success font-size-12 font-weight-bold"
+                >
+                  Best outcome
+                </div>
+                <div
+                  *ngIf="
+                    possibleOutcome.item.name === tradeupSummary.cheapestPrizeItem.name &&
+                    possibleOutcome.item.variation === tradeupSummary.cheapestPrizeItem.variation
+                  "
+                  class="text-danger font-size-12 font-weight-bold"
+                >
+                  Worst outcome
+                </div>
+              </ng-container>
+            </td>
+            <td class="text-right text-muted d-none d-md-table-cell text-nowrap p-0">
+              {{ possibleOutcome.float | number: '1.7-7' | floatToCondition }}
+            </td>
+            <td class="text-right text-muted d-none d-md-table-cell text-nowrap p-0">
+              <span class="market-price"
+                >${{ getSkinPrice(possibleOutcome.item, possibleOutcome.float) || 0 | number: '1.2-2' }}</span
+              >
+              |
+              <span class="price-no-tax text-success font-weight-bold"
+                >${{ skinPriceWithoutTax | number: '1.2-2' }}</span
+              >
+              <ng-container>
+                <a
+                  href="javascript:;"
+                  placement="top"
+                  ngbTooltip="Set custom price"
+                  container="body"
+                  (click)="openCustomPriceModal(possibleOutcome)"
+                  ><i class="fe fe-edit"></i
+                ></a>
+              </ng-container>
+            </td>
+            <td class="text-right text-muted d-none d-md-table-cell text-nowrap p-0">
+              {{ getVolume(possibleOutcome.item, possibleOutcome.float) || 0 }}
+            </td>
+            <td class="text-right">
+              <strong
+                >{{ possibleOutcome.odds | percent: '1.2-2' }}
+                <ng-container *ngIf="skinPriceWithoutTax - tradeupSummary.cost as profit">
+                  (<span [ngClass]="profit >= 0 ? 'text-success' : 'text-danger'"
+                    >${{ skinPriceWithoutTax - tradeupSummary.cost | number: '1.2-2' }}</span
+                  >)
+                </ng-container>
+              </strong>
+            </td>
+          </tr>
+        </ng-template>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
+
+<ng-template #linkToSteam let-itemName="itemName" let-float="float" let-stattrak="stattrak">
+  <a
+    [attr.href]="
+      'https://steamcommunity.com/market/listings/730/' +
+      (tradeupSettings?.stattrak ? 'StatTrak™ ' : '') +
+      itemName +
+      ' ' +
+      (float | floatToCondition: 'fullwithout')
+    "
+    target="_blank"
+    rel="noopener noreferrer"
+    ><i class="fab fa-steam"></i
+  ></a>
+</ng-template>

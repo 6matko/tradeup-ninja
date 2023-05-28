@@ -1,0 +1,82 @@
+<div class="card tradeup-result p-0" [class.card-collapsed]="collapsed">
+  <div class="card-status bg-rarity-{{result.outcome?.rarity}}"></div>
+  <div class="card-header">
+    <h3 class="card-title">
+      {{result.tradeupName || 'No name'}}</h3>
+    <div class="card-options">
+      <a href="javascript:;" (click)="openEditResultModal(result)" placement="bottom" ngbTooltip="Edit tradeup"
+        container="body"><i class="fe fe-edit"></i></a>
+      <a href="javascript:;" (click)="showInputInfo = !showInputInfo" placement="bottom"
+        ngbTooltip="View information about tradeup" container="body"><i class="fe fe-eye"></i></a>
+      <!-- <a href="javascript:;" (click)="toggleCollapse()" placement="bottom" ngbTooltip="Collapse/Expand">
+        <i class="fe" [ngClass]="collapsed ? 'fe-chevron-down' : 'fe-chevron-up'"></i>
+      </a> -->
+      <a href="javascript:;" placement="bottom" ngbTooltip="Remove tradeup" container="body" (click)="removeResult()"><i
+          class="fe fe-x"></i></a>
+    </div>
+  </div>
+  <div class="card-alert alert alert-warning mb-0" *ngIf="!result.outcome && !result.completed">
+    Not completed
+  </div>
+  <div class="card-body text-center position-relative dimmer" [class.active]="processing">
+    <div class="loader"></div>
+    <div class="dimmer-content">
+      <span class="tag result-tag result-id-tag">#{{result.id}}</span>
+      <span class="tag result-tag result-date-tag"
+        *ngIf="result.completed">{{result.completed | date:'dd.MM.yyyy'}}</span>
+      <div class="card-category">
+        <div class="mb-1" *ngIf="result.stattrak">
+          <span class="tag tag-orange">STATTRAK</span>
+        </div>
+        <div>
+          {{result.outcome?.name}}
+        </div>
+        <div [ngClass]="'text-rarity-'+result.outcome?.rarity">
+          {{result.outcome?.rarityName}}
+        </div>
+        <div class="text-muted outcome-float" *ngIf="result.outcome">
+          {{ (result.outcomeFloat | number: '1.7-7') || '-' }}
+        </div>
+      </div>
+      <div>
+        <img [src]="result.outcome?.image || 'assets/unknown.png'" class="outcome-img"
+          [attr.alt]="result.outcome?.name" />
+      </div>
+      <ul class="list-unstyled best-outcome-data">
+        <li class="row">
+          <div class="col-md-6">
+            <p class="label m-0">Cost</p>
+            <div class="text-primary h3 mb-0">
+              {{userPreferences.displayCurrency}}{{result.summary.cost | number:'1.2-2'}}</div>
+          </div>
+          <div class="col-md-6">
+            <p class="label m-0">Received</p>
+            <div class="h3 mb-0"
+              [ngClass]="result.received - result.summary.cost >= 0 ? 'text-success' : 'text-danger'">
+              {{userPreferences.displayCurrency}}{{result.received | number:'1.2-2' }}</div>
+          </div>
+          <div class="col-12">
+            <img *ngIf="result.outcome" [src]="'assets/img/'+result.outcome?.collection.key+'.png'"
+              class="collection-img mt-2 mb-2" [attr.alt]="result.outcome?.collection.name" />
+            <div class="text-center text-muted">
+              {{result.outcome?.collection.name}}
+            </div>
+          </div>
+        </li>
+        <li>
+          <hr class="divider mb-3" />
+        </li>
+        <li>
+          <div class="h5">Average float: <b>{{result.summary.averageInputFloat | number:'1.7-7'}}</b></div>
+        </li>
+      </ul>
+      <div *ngIf="result.outcome">
+        <div class="alert m-0 outcome-profit" [ngClass]="result.summary.profit >= 0 ? 'alert-success' : 'alert-danger'">
+          Profit: <b>{{userPreferences.displayCurrency}}<span></span>{{result.summary.profit | number:'1.2-2'}}</b>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<app-tradeup-input-info [result]="result" (dismiss)="showInputInfo = false" *ngIf="showInputInfo">
+</app-tradeup-input-info>

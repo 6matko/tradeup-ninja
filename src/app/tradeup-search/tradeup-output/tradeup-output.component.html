@@ -1,0 +1,20 @@
+<div class="alert alert-dark output-container">
+  <div class="alert alert-info" *ngIf="stickyMessages.length">
+    <div *ngFor="let stickyMsg of stickyMessages">
+      <ng-container *ngIf="stickyMsg.isHTML; else regularStickyTxt">
+        <div [innerHTML]="stickyMsg.text"></div>
+      </ng-container>
+      <ng-template #regularStickyTxt>
+        {{stickyMsg.text}}
+      </ng-template>
+    </div>
+  </div>
+  <div [ngClass]="msg.class" *ngFor="let msg of messages | slice:0:20">
+    <ng-container *ngIf="msg.isHTML; else regularTxt">
+      <div [innerHTML]="msg.text"></div>
+    </ng-container>
+    <ng-template #regularTxt>
+      {{msg.text}}
+    </ng-template>
+  </div>
+</div>

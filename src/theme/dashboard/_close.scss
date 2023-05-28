@@ -1,0 +1,18 @@
+.close {
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: .3s color;
+
+    @include themify($themes) {
+        color: themed('textColor');
+
+        &:hover {
+            color: darken(themed('textColor'), 20%);
+        }
+    }
+
+    &:before {
+        content: '\ea00';
+        font-family: feather, sans-serif;
+    }
+}

@@ -1,0 +1,154 @@
+<ng-container *ngIf="item?.inputItem; else addItemTmpl" [formGroup]="control">
+  <td class="text-center position-relative">
+    <div class="d-block skin-image position-relative"
+      [ngStyle]="{'background-image': 'url('+item.inputItem.image || 'assets/unknown.png'+')'}" container="body"
+      popoverClass="item-popover" [ngbPopover]="itemPreviewTmplBody" [popoverTitle]="item.inputItem.name"
+      triggers="mouseenter:mouseleave">
+      <div class="position-absolute add-change-item" (click)="openAddItemModal()">
+        <i class="fas fa-plus fa-2x"></i>
+      </div>
+    </div>
+    <ng-template #itemPreviewTmplBody>
+      <div class="text-center mx-auto">
+        <img [src]="item.inputItem.image || 'assets/unknown.png'" class="preview-img" [attr.alt]="item.inputItem.name">
+      </div>
+      <div class="text-center text-rarity-{{item.inputItem.rarity.value}}">{{item.inputItem.rarity.name}}</div>
+      <div class="alert alert-info text-center mb-0 mt-2">
+        Click on icon to change item
+      </div>
+    </ng-template>
+  </td>
+  <td class="position-relative skin-name-container">
+    <div class="collection-bg"
+      [ngStyle]="{'background-image': 'url(assets/img/'+item.inputItem.collection.key+'.png)'}">
+    </div>
+    <div><span class="text-orange font-weight-bold" *ngIf="calculatorForm.get('stattrak').value">STATTRAK
+      </span>
+      <span>
+        {{item.inputItem.name}}
+      </span>
+      <span>
+        <ng-container [ngTemplateOutlet]="linkToSteam"
+          [ngTemplateOutletContext]="{itemName: item.inputItem.name, float: item.float, stattrak: stattrak}">
+        </ng-container>
+      </span>
+    </div>
+    <div class="small text-muted clearfix">
+      <div class="float-left">
+        {{item.inputItem.collection.name}}
+      </div>
+      <div class="float-right">
+        <small class="text-muted">{{item.inputItem.min | number:'1.2-2'}} -
+          {{item.inputItem.max | number:'1.2-2'}}</small>
+      </div>
+    </div>
+    <div class="progress progress-xs mt-1">
+      <div class="progress-bar bg-transparent" [ngStyle]="{'width.%': item.inputItem.min*100}">
+        &nbsp;
+      </div>
+      <div class="progress-bar bg-primary" [ngStyle]="{'width.%': item.inputItem.max*100}">
+        &nbsp;
+      </div>
+    </div>
+  </td>
+  <td>
+    <div id="float-container" class="form-group">
+      <label class="form-label float-left">Float</label>
+      <div class="float-right text-muted small">
+        {{item.float | number: '1.7-7' | floatToCondition:'fullwithout':true}}
+      </div>
+      <div class="input-group mb-3">
+        <input type="number" step="0.01" class="form-control" tabindex="1" formControlName="float"
+          [min]="item.inputItem?.min" [max]="item.inputItem?.max" [class.is-invalid]="control.get('float').invalid" />
+        <div class="input-group-append">
+          <button class="btn btn-outline-primary btn-sm" type="button" (click)="pasteFloat()"
+            [ngbTooltip]="copiedValue.float ? ('Paste copied float: '+copiedValue.float) : 'Copy float to use use this function'"
+            container="body">
+            <i class="fas fa-check"></i>
+          </button>
+          <button class="btn btn-outline-primary btn-sm" type="button" (click)="copyFloat(item.float)"
+            ngbTooltip="Copy float" container="body">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </td>
+  <td>
+    <div class="form-group">
+      <label class="form-label float-left">Price</label>
+      <div class="float-right text-muted small">
+        <!-- NOTE: Last false is for STATTRAK, should be changed later -->
+        API:
+        <ng-container *ngIf="item.inputItem | priceFromFloat:item.float:false:stattrak as price">
+          <b
+            [ngClass]="price === '-' ? 'text-danger' : 'text-green'">{{ price === '-' ? '-' : (price | currency:'USD':'symbol':'1.2-2')}}</b>
+        </ng-container>
+      </div>
+      <div class="input-group mb-3">
+        <input type="number" step="0.01" class="form-control" tabindex="2" placeholder="Item price"
+          formControlName="price" [min]="0" [class.is-invalid]="control.get('price').invalid" />
+        <div class="input-group-append">
+          <button class="btn btn-outline-primary btn-sm" type="button" (click)="resetPrice()"
+            ngbTooltip="Reset price to API value" container="body">
+            <i class="fas fa-redo"></i>
+          </button>
+          <button class="btn btn-outline-primary btn-sm" type="button" (click)="pastePrice()"
+            [ngbTooltip]="copiedValue.price ? ('Paste copied price: '+copiedValue.price) : 'Copy price to use use this function'"
+            container="body">
+            <i class="fas fa-check"></i>
+          </button>
+          <button class="btn btn-outline-primary btn-sm" type="button" (click)="copyPrice(item.price)"
+            ngbTooltip="Copy price" container="body">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </td>
+  <td class="text-center">
+    <div class="item-action">
+      <a href="javascript:;" class="icon" (click)="duplicateItem()">
+        <i class="fe fe-copy" container="body" ngbTooltip="Duplicate this item into free slot"></i>
+      </a>
+      <a href="javascript:;" class="icon" (click)="clearItem()">
+        <i class="fe fe-x" container="body" ngbTooltip="Remove item from calculator"></i>
+      </a>
+    </div>
+  </td>
+</ng-container>
+
+<ng-template #addItemTmpl>
+  <td class="text-center position-relative">
+    <div class="d-block skin-image position-relative">
+      <div class="position-absolute add-change-item no-item" (click)="openAddItemModal()">
+        <ng-container *ngIf="skinsForAutocomplete?.length; else noItemsForSelectIconTmpl">
+          <i class="fas fa-plus fa-2x"></i>
+        </ng-container>
+        <ng-template #noItemsForSelectIconTmpl>
+          <i class="fas fa-frown-open fa-2x"></i>
+        </ng-template>
+      </div>
+    </div>
+  </td>
+  <td colspan="4">
+    <div class="form-group mb-1">
+      <label class="form-label">Skin name</label>
+      <ng-container *ngIf="skinsForAutocomplete">
+        <app-skin-select-autocomplete *ngIf="skinsForAutocomplete.length; else noItemsForSelectTmpl"
+          [allSkins]="skinsForAutocomplete" [inputHeightPx]="28" [tabIndex]="3" [showCollectionName]="true"
+          (skinSelected)="selectSkin($event)">
+        </app-skin-select-autocomplete>
+        <ng-template #noItemsForSelectTmpl>
+          <div class="alert alert-info m-0 py-1">No items for select</div>
+        </ng-template>
+      </ng-container>
+    </div>
+  </td>
+</ng-template>
+
+
+<ng-template #linkToSteam let-itemName="itemName" let-float="float" let-stattrak="stattrak">
+  <a [attr.href]="'https://steamcommunity.com/market/listings/730/'+(stattrak ? 'StatTrak™ ': '')+itemName+ ' '+ (float | floatToCondition:'fullwithout')"
+    target="_blank" rel="noopener noreferrer"><i class="fab fa-steam"></i></a>
+</ng-template>

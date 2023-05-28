@@ -1,0 +1,60 @@
+<div class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="row">
+          <div class="col-6 col-md-3">
+            <ul class="list-unstyled mb-0">
+              <li><a [attr.href]="systemConst.discordUrl" target="_blank" rel="noopener noreferrer">Discord</a></li>
+              <li><a [attr.href]="systemConst.steamGroupUrl" rel="noopener noreferrer">Steam group</a></li>
+              <li><a routerLink="/useful">Useful links</a></li>
+            </ul>
+          </div>
+          <div class="col-6 col-md-3">
+            <ul class="list-unstyled mb-0">
+              <li>
+                <a [attr.href]="systemConst.discordChangelogUrl" target="_blank" rel="noopener noreferrer">Changelog</a>
+              </li>
+              <li><a routerLink="/issues">Known issues</a></li>
+              <li><a routerLink="/planned">Planned features</a></li>
+            </ul>
+          </div>
+          <div class="col-6 col-md-3">
+            <ul class="list-unstyled mb-0">
+              <li><a routerLink="/contacts">Contacts</a></li>
+              <li><a routerLink="/legal/privacy">Privacy policy</a></li>
+              <li><a routerLink="/legal/tos">Terms of service</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 mt-4 mt-lg-0">
+        Free tool that helps you to search and manage tradeups. Hopefully it will assist you!
+      </div>
+    </div>
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="row align-items-center flex-row-reverse">
+      <div class="col-auto ml-lg-auto">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span>
+              Developed by
+              <a href="https://steamcommunity.com/id/6matko/" target="_blank" rel="noopener noreferrer">6matko</a>.
+            </span>
+            <a routerLink="/donate" class="btn btn-outline-danger btn-sm"><i class="fas fa-heart"></i> Donate</a>
+            <div class="text-right">v{{ version }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-auto mt-3 mt-lg-0 text-left">
+        <div>
+          Not affiliated with Steam or Valve corp.
+        </div>
+        <div>© 2020 - {{ today | date: 'yyyy' }}</div>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,39 @@
+<div class="my-3 my-md-5">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">
+        About Tradeup Ninja
+      </h1>
+    </div>
+    <div class="row">
+      <div class="col-lg-3 order-lg-1 mb-4">
+        <div class="list-group list-group-transparent mb-0">
+          <a routerLink="/about" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+            class="list-group-item list-group-item-action">
+            <span class="icon mr-3"><i class="fas fa-info-circle"></i></span>About
+          </a>
+          <a [attr.href]="systemConst.discordChangelogUrl" target="_blank" rel="noopener noreferrer"
+            class="list-group-item list-group-item-action">
+            <span class="icon mr-3"><i class="fas fa-clipboard-list"></i></span>Changelog
+          </a>
+          <a routerLink="/planned" routerLinkActive="active" class="list-group-item list-group-item-action">
+            <span class="icon mr-3"><i class="fas fa-calendar-plus"></i></span>Planned features
+          </a>
+          <a routerLink="/issues" routerLinkActive="active" class="list-group-item list-group-item-action">
+            <span class="icon mr-3"><i class="fas fa-bug"></i></span>Known issues
+          </a>
+          <a routerLink="/useful" routerLinkActive="active" class="list-group-item list-group-item-action">
+            <span class="icon mr-3"><i class="fas fa-book"></i></span>Useful links
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-9">
+        <div class="card">
+          <div class="card-body">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

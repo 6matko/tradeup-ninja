@@ -1,0 +1,106 @@
+<div id="collection-display" class="my-3 my-md-5">
+  <div class="px-5">
+    <div class="page-header mb-0 pb-0 pb-4">
+      <div class="row align-items-center w-100 mx-0 px-0" *ngIf="collectionName">
+        <div class="col-lg-7 d-flex flex-column align-items-start">
+          <h1 class="page-title">
+            Information about <b>{{collectionName}}</b>
+          </h1>
+          <a class="btn btn-primary mr-2" routerLink="..">Back to collections</a>
+        </div>
+        <div class="col-lg-5 ml-auto d-md-flex align-items-center">
+          <form class="input-icon my-3 my-lg-0 form-group w-100">
+            <input name="filterText" type="search" class="form-control header-search" placeholder="Filter by skin name"
+              tabindex="1" [(ngModel)]="filterText" (ngModelChange)="filter($event)">
+            <div class="input-icon-addon">
+              <i class="fe fe-search"></i>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="dimmer" [class.active]="isLoading">
+          <div class="loader"></div>
+          <div class="dimmer-content">
+            <div class="row">
+              <div class="col-12" *ngIf="!error && collectionWithSkinsForDisplay; else errorTmpl">
+                <div class="row mx-0">
+                  <ng-container *ngIf="collectionWithSkinsForDisplay.length; else noItemsTmpl">
+                    <ng-container *ngFor="let item of collectionWithSkinsForDisplay">
+                      <div class="col-sm-6 col-xl-3">
+                        <div class="card">
+                          <img class="card-img-top" [src]="item.image || 'assets/unknown.png'" [attr.alt]="item.name">
+                          <div class="card-body d-flex flex-column pt-0">
+                            <div class="text-muted">
+                              {{item.min | number:'1.2-2'}} - {{item.max | number:'1.2-2'}}
+                            </div>
+                            <div class="progress mb-3">
+                              <div class="progress-bar bg-transparent" [ngStyle]="{'width.%': item.min*100}">
+                                &nbsp;
+                              </div>
+                              <div class="progress-bar bg-warning" [ngStyle]="{'width.%': item.max*100}">
+                                &nbsp;
+                              </div>
+                            </div>
+
+                            <h4 class="mb-0 text-muted">{{item.name}}</h4>
+                            <small class="font-weight-bold"
+                              [ngClass]="'text-rarity-'+item.rarity.value">{{item.rarity.name}}</small>
+                            <app-skin-price-table [item]="item"></app-skin-price-table>
+                            <div class="d-flex align-items-center pt-5 mt-auto">
+                              <div class="collection-img mr-3"
+                                [ngStyle]="{'background': 'url(assets/img/'+item.collection.key+'.png)'}">
+                              </div>
+                              <div>
+                                <div class="text-default">{{item.collection.name}}</div>
+                              </div>
+                              <div class="ml-auto">
+                                <a [attr.href]="'https://steamcommunity.com/market/search?appid=730&q='+item.name"
+                                  target="_blank" rel="noopener noreferrer"><i class="fab fa-steam"></i></a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #noItemsTmpl>
+  <div class="col-12 text-center h3 mt-5">
+    No items for display
+  </div>
+</ng-template>
+
+<ng-template #errorTmpl>
+  <div class="container" *ngIf="!isLoading && error">
+    <div class="row">
+      <div class="col-12 text-center mb-4">
+        <img src="assets/logo.svg" height="300" class="logo" alt="Tradeup ninja logo">
+      </div>
+      <div class="col-12">
+        <div class="alert alert-danger text-center">
+          {{error}}
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="text-center mt-2">
+          <button class="btn btn-primary btn-lg text-uppercase" type="button"
+            routerLink="/input-overview/collections">Back to
+            collections</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

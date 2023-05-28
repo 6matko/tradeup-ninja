@@ -1,0 +1,16 @@
+.floating-container {
+    position: fixed;
+    // 4rem because below that there are some other floating buttons in components like tradeup search/result
+    bottom: 4rem;
+    right: 1rem;
+}
+
+.scroll-top {
+    opacity: 0;
+    transition: all .3s ease-in-out;
+
+    &-show {
+        opacity: 1;
+        transition: all .3s ease-in-out;
+    }
+}

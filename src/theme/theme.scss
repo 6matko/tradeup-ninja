@@ -1,0 +1,92 @@
+/*
+ * Global application theme.
+ * Framework overrides and customization goes here.
+ */
+.bg-primary {
+    border-color: darken($primary, 5%);
+}
+
+.bg-dark {
+    border-color: darken($dark, 5%);
+}
+
+.bg-light {
+    background-color: #fff !important;
+    border-color: darken(#fff, 5%);
+}
+
+// Indicators ==================================================================
+
+.close {
+    text-decoration: none;
+    opacity: 0.4;
+
+    &:hover,
+    &:focus {
+        opacity: 1;
+    }
+}
+
+.alert,
+.toast {
+    color: $white;
+    @include shadow();
+
+    &-primary {
+        background-color: $primary;
+        border-color: darken($primary, 5%);
+    }
+
+    &-secondary {
+        background-color: $secondary;
+        border-color: darken($secondary, 5%);
+    }
+
+    &-success {
+        background-color: $success;
+        border-color: darken($success, 5%);
+    }
+
+    &-info {
+        background-color: $info;
+        border-color: darken($info, 5%);
+    }
+
+    &-danger {
+        background-color: $danger;
+        border-color: darken($danger, 5%);
+    }
+
+    &-warning {
+        background-color: $warning;
+        border-color: darken($warning, 5%);
+    }
+
+    &-dark {
+        background-color: $dark;
+        border-color: darken($dark, 5%);
+    }
+
+    &-light {
+        background-color: $light;
+        border-color: darken($light, 5%);
+    }
+
+    .alert-link {
+        font-weight: normal;
+        color: #fff;
+        text-decoration: underline;
+    }
+
+    &-secondary,
+    &-light {
+        @include themify($themes) {
+
+            &,
+            & a,
+            & .alert-link {
+                color: themed('textColor');
+            }
+        }
+    }
+}

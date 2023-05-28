@@ -1,0 +1,106 @@
+@import "../../../theme/theme-variables.scss";
+
+.sidemenu {
+    width: 80px;
+    height: 100%;
+    background: $very-gray;
+    transition: 0.4s ease;
+    // Higher than floating menu and multiselect dropdown (201 & 200)
+    // but lower than simulation menu (500)
+    z-index: 250;
+
+    &.full {
+        width: 250px;
+        transition: 0.4s ease;
+
+        .logo {
+            .header-brand-img {
+                padding: 0 3rem;
+                transition: 0.4s ease;
+            }
+        }
+
+        .list-group {
+            white-space: normal;
+
+            .list-group-item {
+
+                .user-avatar {
+                    max-width: 30px;
+                    max-height: 30px;
+                }
+
+                i {
+                    transition: 0.4s ease;
+                    margin-left: 1rem;
+                }
+
+                .menu-name {
+                    opacity: 1;
+                    visibility: visible;
+                }
+            }
+        }
+    }
+
+    .brand {
+        border-bottom: 1px solid $gray-800;
+    }
+
+    .logo {
+
+        .header-brand-img {
+            width: 100%;
+            height: auto;
+            min-height: 70px;
+            padding: 0 0.5rem;
+            transition: 0.4s ease;
+        }
+    }
+
+    .list-group {
+        display: block;
+        white-space: nowrap;
+
+        button {
+            outline: none;
+        }
+
+        .list-group-item {
+            display: flex;
+
+            &:hover {
+                span {
+                    color: $white;
+                }
+            }
+
+            i {
+                font-size: 30px;
+                transition: 0.4s ease;
+                margin-left: 1.5rem;
+                width: 0;
+                display: flex;
+                align-self: center;
+                justify-content: center;
+            }
+
+            &.discord {
+                &:hover {
+                    i {
+                        color: $blue;
+                    }
+                }
+            }
+
+            .menu-name {
+                opacity: 0;
+                line-height: 36px;
+                vertical-align: top;
+                margin-left: 1.5rem;
+                visibility: hidden;
+                transition: 0.4s ease;
+            }
+        }
+    }
+}

@@ -1,0 +1,171 @@
+<div class="sidemenu position-fixed d-flex flex-column pt-4" [class.full]="isOpen">
+  <div class="brand h5 text-left pl-4 pb-3 text-muted" *ngIf="false">
+    Tradeup Ninja
+  </div>
+  <div class="logo mx-auto text-center pb-4">
+    <a name="logo" routerLink="/">
+      <img src="assets/logo.svg" class="header-brand-img" alt="Tradeup ninja logo" />
+    </a>
+  </div>
+  <div class="list-group list-group-transparent mb-0">
+    <a
+      name="home"
+      routerLink="/about"
+      routerLinkActive="active"
+      class="list-group-item list-group-item-action"
+      placement="right"
+      [openDelay]="300"
+      [ngbTooltip]="isOpen ? '' : 'About'"
+    >
+      <i class="fas fa-home"></i>
+      <span class="menu-name">About</span>
+    </a>
+  </div>
+  <div class="list-group list-group-transparent mb-0">
+    <a
+      name="tradeupSearch"
+      routerLink="/search"
+      routerLinkActive="active"
+      class="list-group-item list-group-item-action"
+      placement="right"
+      [openDelay]="300"
+      [ngbTooltip]="isOpen ? '' : 'Search'"
+      ><i class="fas fa-search"></i>
+      <span class="menu-name">Search</span>
+    </a>
+  </div>
+  <div class="list-group list-group-transparent mb-0">
+    <a
+      name="results"
+      routerLink="/calculator"
+      routerLinkActive="active"
+      class="list-group-item list-group-item-action"
+      placement="right"
+      [openDelay]="300"
+      [ngbTooltip]="isOpen ? '' : 'Trade up calculator'"
+    >
+      <i class="fas fa-calculator"></i>
+      <span class="menu-name">Calculator</span>
+    </a>
+  </div>
+  <div class="list-group list-group-transparent mb-0">
+    <a
+      name="results"
+      routerLink="/results"
+      routerLinkActive="active"
+      class="list-group-item list-group-item-action"
+      placement="right"
+      [openDelay]="300"
+      [ngbTooltip]="isOpen ? '' : 'Results'"
+    >
+      <i class="fas fa-piggy-bank"></i>
+      <span class="menu-name">Results</span>
+    </a>
+  </div>
+  <div class="list-group list-group-transparent mb-0">
+    <a
+      name="results"
+      routerLink="/input-overview"
+      routerLinkActive="active"
+      class="list-group-item list-group-item-action"
+      placement="right"
+      [openDelay]="300"
+      [ngbTooltip]="isOpen ? '' : 'Input overview'"
+    >
+      <i class="fas fa-database"></i>
+      <span class="menu-name">Input overview</span>
+    </a>
+  </div>
+  <div class="list-group list-group-transparent mb-0">
+    <button
+      name="userPreferences"
+      type="button"
+      class="list-group-item list-group-item-action"
+      (click)="openPreferencesModal()"
+      placement="right"
+      [openDelay]="300"
+      ngbTooltip="User preferences"
+    >
+      <i class="fe fe-settings"></i>
+      <span class="menu-name">User preferences</span>
+    </button>
+  </div>
+
+  <ng-container *ngIf="userInfo$ | async as userInfo; else userNotAuthenticatedTmpl">
+    <div class="list-group list-group-transparent mb-0 mt-auto">
+      <button
+        name="userInventory"
+        type="button"
+        class="list-group-item list-group-item-action"
+        routerLink="/inventory"
+        placement="right"
+        [openDelay]="300"
+        ngbTooltip="User inventory"
+      >
+        <img [src]="userInfo.photoUrl || 'assets/unknown.png'" class="user-avatar" />
+        <span class="menu-name">Inventory</span>
+      </button>
+    </div>
+  </ng-container>
+  <ng-template #userNotAuthenticatedTmpl>
+    <div class="list-group list-group-transparent mb-0 mt-auto">
+      <a
+        href="/api/auth/login"
+        class="list-group-item list-group-item-action"
+        rel="noopener noreferrer"
+        placement="right"
+        [openDelay]="300"
+        [ngbTooltip]="isOpen ? '' : 'Log in'"
+      >
+        <img
+          class="text-center mx-auto"
+          src="https://community.akamai.steamstatic.com/public/images/signinthroughsteam/sits_02.png"
+          alt="Log in via Steam"
+        />
+      </a>
+    </div>
+  </ng-template>
+
+  <div class="list-group list-group-transparent mb-0">
+    <a
+      [attr.href]="systemConst.discordUrl"
+      class="list-group-item list-group-item-action discord"
+      target="_blank"
+      rel="noopener noreferrer"
+      placement="right"
+      [openDelay]="300"
+      [ngbTooltip]="isOpen ? '' : 'Join our Discord server'"
+    >
+      <i class="fab fa-discord"></i>
+      <span class="menu-name">Our Discord server</span>
+    </a>
+  </div>
+  <div class="list-group list-group-transparent mb-0">
+    <button
+      name="toggleCollapse"
+      type="button"
+      class="list-group-item list-group-item-action"
+      (click)="toggleDarkMode(!userPreferences.darkMode, true)"
+      placement="right"
+      [openDelay]="300"
+      [ngbTooltip]="isOpen ? '' : 'Toggle dark mode'"
+    >
+      <i class="fe" [ngClass]="userPreferences.darkMode ? 'fe-sun text-yellow' : 'fe-moon text-indigo'"></i>
+      <span class="menu-name">Toggle dark mode</span>
+    </button>
+  </div>
+  <div class="list-group list-group-transparent mb-0">
+    <button
+      name="toggleCollapse"
+      type="button"
+      class="list-group-item list-group-item-action"
+      (click)="openSidebar(!isOpen)"
+      placement="right"
+      [openDelay]="300"
+      [ngbTooltip]="isOpen ? '' : 'Expand sidebar'"
+    >
+      <i class="fe" [ngClass]="isOpen ? 'fe-chevrons-left' : 'fe-chevrons-right'"></i>
+      <span class="menu-name">Collapse</span>
+    </button>
+  </div>
+</div>

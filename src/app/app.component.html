@@ -1,0 +1,2 @@
+<router-outlet></router-outlet>
+<app-gdpr-bar *ngIf="showGDPRBar" (consentGiven)="startTracking($event)"></app-gdpr-bar>

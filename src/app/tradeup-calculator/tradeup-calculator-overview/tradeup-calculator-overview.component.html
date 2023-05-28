@@ -1,0 +1,132 @@
+<div class="floating-overview card" [class.card-fullscreen]="fullScreen" [class.isShown]="isShown">
+  <div class="card-header">
+    <ng-container *ngIf="tradeupSummary && tradeupSettings">
+      <h3 class="card-title text-muted">Cost: <b
+          class="text-white">{{tradeupSummary.cost | currency:'USD':'symbol':'1.2-2'}}</b> |
+        Average float:
+        <span class="text-white">{{tradeupSummary.averageFloat | number: '1.7-7'}}</span>
+        <span class="tag tag-orange ml-2" *ngIf="tradeupSettings?.stattrak">STATTRAK</span>
+      </h3>
+    </ng-container>
+    <div class="card-options">
+      <a href="javascript:;" class="card-options-remove" (click)="closeOverview()"><i class="fe fe-x"></i></a>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="logo-bg"></div>
+    <div class="row" *ngIf="tradeupSummary && tradeupSettings; else completeTradeupTmpl">
+      <div class="order-lg-1 order-2 col-lg-9">
+        <div class="row justify-content-center">
+          <div class="col-lg-2 col-md-3 col-sm-6 col-12 card calculator-item-preview"
+            *ngFor="let item of inputItems; let i = index;">
+            <ng-container *ngIf="item.value.inputItem">
+              <div class="card-status bg-rarity-{{item.value.inputItem.rarity.value}}"></div>
+
+              <div class="collection-img mr-3"
+                [ngStyle]="{'background-image': 'url(assets/img/'+item.value.inputItem.collection.key+'.png'}">
+              </div>
+              <div class="card-body p-2 d-flex flex-column">
+                <h5 class="my-2 text-center" [ngClass]="'text-rarity-'+item.value.inputItem.rarity.value">
+                  {{item.value.inputItem.name}}</h5>
+                <div class="skin-img" [ngStyle]="{'background-image': 'url('+item.value.inputItem.image+')'}"></div>
+                <div>
+                  <div>
+                    <div class="d-flex flex-wrap align-items-center justify-content-between pt-0">
+                      <div class="text-default font-weight-bold">
+                        {{item.value.float | number:'1.7-7'}}
+                        <small
+                          class="d-block text-muted">{{item.value.float | floatToCondition:'fullwithout':true}}</small>
+                      </div>
+                      <div class="ml-2">
+                        <div class="price d-block text-success font-weight-bold">
+                          {{item.value.price | currency:'USD':'symbol':'1.2-2'}}
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <small class="collection-name text-center d-block w-100">
+                        {{item.value.inputItem.collection.name}}
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <h4 class="my-2 text-center text-warning">INPUTS</h4>
+        <hr class="divider bg-dark">
+        <h4 class="my-2 text-center text-info">OUTCOMES</h4>
+
+        <div class="row justify-content-center mt-2">
+          <div class="col-lg-2 col-md-3 col-sm-6 col-12 card calculator-item-preview outcome"
+            *ngFor="let possibleOutcome of tradeupSummary.outcomeSummary.outcomes">
+            <ng-container *ngIf="possibleOutcome.item">
+              <div class="card-status bg-rarity-{{possibleOutcome.item.rarity.value}}"></div>
+
+              <div class="collection-img mr-3"
+                [ngStyle]="{'background-image': 'url(assets/img/'+possibleOutcome.item.collection.key+'.png'}">
+              </div>
+
+              <span class="tag tag-success outcome-tag"
+                *ngIf="possibleOutcome.item.name === tradeupSummary.mostExpensivePrizeItem.name">Best outcome</span>
+              <span class="tag tag-danger outcome-tag"
+                *ngIf="possibleOutcome.item.name === tradeupSummary.cheapestPrizeItem.name">Worst outcome</span>
+
+              <div class="card-body mt-4 p-2 d-flex flex-column">
+                <h5 class="my-2 text-center" [ngClass]="'text-rarity-'+possibleOutcome.item.rarity.value">
+                  {{possibleOutcome.item.name}}</h5>
+                <div class="skin-img" [ngStyle]="{'background-image': 'url('+possibleOutcome.item.image+')'}"></div>
+                <div>
+                  <div>
+                    <div class="d-flex flex-wrap align-items-center justify-content-between pt-0">
+                      <div class="text-default font-weight-bold">
+                        {{possibleOutcome.float | number:'1.7-7'}}
+                        <small
+                          class="d-block text-muted">{{possibleOutcome.float | floatToCondition:'fullwithout':true}}</small>
+                      </div>
+                      <div class="ml-2">
+                        <div class="text-right text-info">
+                          {{possibleOutcome.odds | percent: '1.2-2'}}
+                        </div>
+                        <div class="price d-block font-weight-bold"
+                          *ngIf="getSkinPrice(possibleOutcome.item, possibleOutcome.float) as skinPrice">
+                          <span
+                            [ngClass]="skinPrice >= tradeupSummary.cost ? 'text-success' : 'text-danger'">{{skinPrice || 0 | currency:'USD':'symbol':'1.2-2'}}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <small class="collection-name text-center d-block w-100">
+                        {{possibleOutcome.item.collection.name}}
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="order-lg-2 order-1 col-lg-3">
+        <ng-container *ngIf="tradeupSummary">
+          <app-tradeup-calculator-summary [tradeupSettings]="tradeupSettings" [tradeupSummary]="tradeupSummary">
+          </app-tradeup-calculator-summary>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #completeTradeupTmpl>
+  <div class="h2 text-center alert alert-warning mt-4 mx-auto w-50">
+    Please add all 10 input items in calculator to overview trade up.
+  </div>
+</ng-template>
+
+<ng-template #loadingTmpl>
+  <div class="w-100 text-center">
+    <div class="loading-indicator searching-loader"></div>
+  </div>
+</ng-template>

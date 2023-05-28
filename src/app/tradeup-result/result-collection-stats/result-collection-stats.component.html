@@ -1,0 +1,26 @@
+<div class="floating-info">
+  <div class="card">
+    <div class="card-header">
+      Tradeup results by collection
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Collection name</th>
+              <th scope="col">Profitable outcomes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let stat of stats">
+              <td> <img src="assets/img/{{stat.collection.key}}.png" class="mr-2" />
+                {{stat.collection.name}}</td>
+              <td>{{stat.profitableTradeupAmount}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

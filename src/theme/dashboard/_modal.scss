@@ -1,0 +1,6 @@
+.modal-content {
+    @include themify($themes) {
+        background-color: themed('bgColor');
+        color: themed('textColor');
+    }
+}

@@ -1,0 +1,29 @@
+#input-overview {
+    .card-img-top {
+        height: 150px;
+        width: auto;
+        margin: 0 auto;
+        text-align: center;
+        display: block;
+        padding: 0.5rem;
+    }
+
+    .collection-img {
+        border-radius: 0;
+        // For some reason these styles get overriden and therefore don't work without !important
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .progress {
+        height: 0.5rem;
+    }
+
+    virtual-scroller {
+        width: 100%;
+        height: 800px;
+    }
+}

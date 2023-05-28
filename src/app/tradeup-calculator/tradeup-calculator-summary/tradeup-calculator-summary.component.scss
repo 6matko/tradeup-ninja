@@ -1,0 +1,85 @@
+.preview-img {
+    min-width: 150px;
+    width: 150px;
+    height: auto;
+}
+
+.best-outcome {
+    .outcome-float {
+        font-size: 12px;
+    }
+}
+
+.card {
+    margin-bottom: 30px;
+    padding: 3em;
+    line-height: 1.5em;
+}
+
+.collection-bg {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    opacity: 0.4;
+    width: 50%;
+    height: 50%;
+    position: absolute;
+    max-height: 150px;
+}
+
+.preview {
+    display: flex;
+    flex-direction: column;
+}
+
+.best-outcome-data {
+    li {
+        text-align: left;
+    }
+}
+
+.success-odds {
+    font-size: 20px;
+}
+
+@media screen and (max-width: 996px) {
+    .preview {
+        margin-bottom: 20px;
+    }
+}
+
+.preview-pic {
+    flex-grow: 1;
+
+    .st {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: rgba(209, 127, 4, 0.747);
+        color: black;
+        padding: 0.3rem 1rem;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+    .price {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background: #0b840b;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        color: white;
+        font-size: 24px;
+    }
+
+    .percent {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        border-radius: 5px;
+        padding: 0.1rem 0.6rem;
+        font-weight: bold;
+        font-size: 20px;
+    }
+}

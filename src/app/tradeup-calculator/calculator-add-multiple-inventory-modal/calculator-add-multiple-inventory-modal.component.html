@@ -1,0 +1,178 @@
+<form id="add-collection-item" ngNoForm>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Add items to trade up from your inventory</h5>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+    </div>
+    <div class="modal-body pt-0">
+      <div class="row pt-4">
+        <div class="col-12">
+          <div>
+            <div class="card sticky">
+              <div class="card-header">
+                <h3 class="card-title d-none d-sm-block">Filter skins</h3>
+                <div class="card-options">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control form-control-sm"
+                      placeholder="Filter by skin name"
+                      name="inventorySearch"
+                      (input)="search($event.target.value)"
+                    />
+                    <span
+                      class="input-group-btn ml-2 d-inline-block"
+                      ngbDropdown
+                      placement="bottom-right"
+                      container="body"
+                    >
+                      <button class="btn btn-sm btn-default" type="button" ngbDropdownToggle>
+                        <span class="fe fe-filter"></span>
+                      </button>
+                      <div ngbDropdownMenu aria-labelledby="filter-dropdown">
+                        <button
+                          type="button"
+                          ngbDropdownItem
+                          (click)="sortSkinsByOption(5)"
+                          [class.active]="selectedSorting.inventory.direction === 'asc'"
+                        >
+                          By lowest float
+                        </button>
+                        <button
+                          type="button"
+                          ngbDropdownItem
+                          (click)="sortSkinsByOption(6)"
+                          [class.active]="selectedSorting.inventory.direction === 'desc'"
+                        >
+                          By highest float
+                        </button>
+                      </div>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="!inventoryLoading; else loading">
+              <ng-container *ngIf="inventorySkinsForDisplay.length; else noItemsTmpl">
+                <virtual-scroller #scroll [items]="inventorySkinsForDisplay" [bufferAmount]="1" class="mt-3">
+                  <div class="card">
+                    <div class="card-body">
+                      <table class="table card-table table-striped table-vcenter input-item-table">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th class="pl-0">Skin</th>
+                            <th>Float</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody #container>
+                          <tr *ngFor="let item of scroll.viewPortItems" [class.selected]="item.selected">
+                            <td class="text-center position-relative pl-2" (click)="selectSkinFromInventory(item)">
+                              <div
+                                class="d-block skin-image position-relative"
+                                [ngStyle]="{
+                                  'background-image': 'url(' + item.imageurl || 'assets/unknown.png' + ')'
+                                }"
+                                container="body"
+                                popoverClass="item-popover"
+                                [ngbPopover]="itemPreviewTmplBody"
+                                [popoverTitle]="item.full_item_name"
+                                triggers="mouseenter:mouseleave"
+                              ></div>
+                              <ng-template #itemPreviewTmplBody>
+                                <div class="text-center mx-auto">
+                                  <img
+                                    [src]="item.imageurl || 'assets/unknown.png'"
+                                    class="preview-img"
+                                    [attr.alt]="item.full_item_name"
+                                  />
+                                </div>
+                                <div class="text-center text-rarity-{{ item.rarity }}">
+                                  {{ item.rarity_name }}
+                                </div>
+                              </ng-template>
+                            </td>
+                            <td
+                              class="p-0 position-relative skin-name-container"
+                              (click)="selectSkinFromInventory(item)"
+                            >
+                              <div>
+                                {{ item.weapon_type }} | {{ item.item_name }}
+                                <span *ngIf="item.quality === 9" class="tag tag-orange">STATTRAK</span>
+                              </div>
+                            </td>
+                            <td (click)="selectSkinFromInventory(item)">
+                              <div class="text-muted">
+                                {{ item.floatvalue | number: '1.7-7' }}
+                              </div>
+                              <div class="progress" [ngbTooltip]="'Float cap: ' + item.min + ' - ' + item.max">
+                                <div class="progress-bar bg-transparent" [ngStyle]="{ 'width.%': item.min * 100 }">
+                                  &nbsp;
+                                </div>
+                                <div class="progress-bar bg-warning" [ngStyle]="{ 'width.%': item.max * 100 }">
+                                  &nbsp;
+                                </div>
+                              </div>
+                              <div class="text-muted">
+                                {{ item.wear_name }}
+                              </div>
+                            </td>
+                            <td class="w-1">
+                              <ng-container
+                                [ngTemplateOutlet]="linkToSteam"
+                                [ngTemplateOutletContext]="{ itemName: item.full_item_name }"
+                              >
+                              </ng-container>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </virtual-scroller>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer justify-content-md-between">
+      <div class="h4 m-0" [ngClass]="{ 'text-shake text-danger': showShakeAnimation }">
+        Selected: {{ selectedItems.length }}/{{ amountOfFreeSlotsInCalculator }}
+      </div>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="addItems()"
+        aria-label="Add item"
+        [disabled]="!selectedItems.length"
+      >
+        Add item
+      </button>
+    </div>
+  </div>
+</form>
+
+<ng-template #linkToSteam let-itemName="itemName">
+  <a
+    [attr.href]="'https://steamcommunity.com/market/search?q=' + (stattrak ? 'StatTrak™ ' : '') + itemName"
+    target="_blank"
+    rel="noopener noreferrer"
+    ><i class="fab fa-steam"></i
+  ></a>
+</ng-template>
+
+<ng-template #noItemsTmpl>
+  <div class="col-12 text-center h3 mt-5">
+    No items for display
+  </div>
+</ng-template>
+
+<ng-template #loading>
+  <div class="row">
+    <div class="col-12 my-2">
+      <div class="loading-indicator my-0 mx-auto"></div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,120 @@
+@import "src/theme/theme-variables";
+
+.outcome-profit {
+    font-size: 20px;
+}
+
+.outcome-img {
+    max-height: 150px;
+}
+
+.collection-img {
+    max-height: 40px;
+}
+
+.result-tag {
+    position: absolute;
+    top: 0;
+
+    &.result-id-tag {
+        left: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    &.result-date-tag {
+        right: 0;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-top-left-radius: 0;
+    }
+}
+
+
+.card {
+    border-radius: 5px;
+    box-shadow: 0 1px 20px 0 rgba(69, 90, 100, 0.3);
+    border: none;
+    margin-bottom: 30px;
+
+    .stattrak {
+        position: absolute;
+        right: 0.5rem;
+        top: 0.5rem;
+    }
+
+    .resultId {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: 12px;
+    }
+
+    .outcome-item {
+        padding: 0.5rem;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+
+        .outcome-img {
+            width: 100px;
+            height: auto;
+        }
+
+        .collection-img {
+            width: 60px;
+            height: auto;
+        }
+
+        .wear {
+            font-size: 12px;
+        }
+    }
+
+
+    .bg-rarity-2 {
+        background: -webkit-gradient(linear, left top, right top, from(theme-color("industrial")), to(lighten(theme-color("industrial"), 10%)));
+        background: linear-gradient(to right, lighten(theme-color("industrial"), 10%), theme-color("industrial"));
+    }
+
+    .bg-rarity-3 {
+        background: -webkit-gradient(linear, left top, right top, from(theme-color("milspecs")), to(lighten(theme-color("milspecs"), 10%)));
+        background: linear-gradient(to right, lighten(theme-color("milspecs"), 10%), theme-color("milspecs"));
+    }
+
+    .bg-rarity-4 {
+        background: -webkit-gradient(linear, left top, right top, from(theme-color("restricted")), to(lighten(theme-color("restricted"), 10%)));
+        background: linear-gradient(to right, lighten(theme-color("restricted"), 10%), theme-color("restricted"));
+    }
+
+    .bg-rarity-5 {
+        background: -webkit-gradient(linear, left top, right top, from(theme-color("classified")), to(lighten(theme-color("classified"), 10%)));
+        background: linear-gradient(to right, lighten(theme-color("classified"), 10%), theme-color("classified"));
+    }
+
+    .bg-rarity-6 {
+        background: -webkit-gradient(linear, left top, right top, from(theme-color("covert")), to(lighten(theme-color("covert"), 10%)));
+        background: linear-gradient(to right, lighten(theme-color("covert"), 10%), theme-color("covert"));
+    }
+
+    .info-block {
+        min-height: 230px;
+
+        .card-block {
+            padding: 0 1.25rem;
+            margin-top: 0.5rem;
+
+            .sub-title {
+                font-weight: 500;
+                border-bottom: 1px solid #e0e0e0;
+                font-size: 20px;
+                margin-bottom: 0.5rem;
+            }
+
+            .label {
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+        }
+    }
+}

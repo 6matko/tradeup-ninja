@@ -1,0 +1,9 @@
+<td>#{{ order + 1 }}</td>
+<td class="w-100">
+  <img [src]="item.imageurl || 'assets/unknown.png'" class="mr-2" width="60" />
+  <div class="text-container">
+    <div>{{ item.full_item_name }}</div>
+    <small [ngClass]="'text-rarity-' + item.rarity">{{ item.rarity | rarityToText }}</small>
+  </div>
+</td>
+<td>{{ item.floatvalue | number: '1.7-7' }}</td>

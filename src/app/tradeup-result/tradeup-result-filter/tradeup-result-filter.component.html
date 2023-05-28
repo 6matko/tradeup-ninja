@@ -1,0 +1,79 @@
+<div class="row">
+  <div class="offset-xl-6 col-xl-6">
+    <button class="btn btn-block btn-info mb-2" title="Reset filtering" (click)="resetFilter()">
+      <i class="fas fa-redo mr-2"></i>
+      Reset filter
+    </button>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <form [formGroup]="filterForm">
+      <div class="form-group">
+        <label class="form-label">Filter by tradeup name or outcome</label>
+        <input type="text" class="form-control" name="example-text-input" formControlName="filterText"
+          placeholder="Tradeup title or outcome name/colllection...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date Range</label>
+        <input class="form-control" placeholder="Select Date" [formControl]="filterForm.get('completedRange')"
+          [ngxDatePicker]="dateInstanceRange">
+        <ngx-date-picker #dateInstanceRange [options]="rangeDatePickerOptions"></ngx-date-picker>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Trade up status</label>
+        <div class="selectgroup selectgroup-pills">
+          <label class="selectgroup-item">
+            <input type="checkbox" name="completed" [value]="true" class="selectgroup-input" formControlName="completed"
+              [checked]="filterForm.get('completed').value">
+            <span class="selectgroup-button">Completed</span>
+          </label>
+          <label class="selectgroup-item">
+            <input type="checkbox" name="incomplete" [value]="true" class="selectgroup-input"
+              formControlName="incomplete" [checked]="filterForm.get('incomplete').value">
+            <span class="selectgroup-button">Not completed</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Stattrak or normal</label>
+        <div class="selectgroup selectgroup-pills">
+          <label class="selectgroup-item">
+            <input type="checkbox" name="stattrak" [value]="true" class="selectgroup-input" formControlName="stattrak"
+              [checked]="filterForm.get('stattrak').value">
+            <span class="selectgroup-button stattrak">STATTRAK</span>
+          </label>
+          <label class="selectgroup-item">
+            <input type="checkbox" name="normal" [value]="true" class="selectgroup-input" formControlName="normal"
+              [checked]="filterForm.get('normal').value">
+            <span class="selectgroup-button">Normal</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Successful or failed</label>
+        <div class="selectgroup selectgroup-pills">
+          <label class="selectgroup-item">
+            <input type="checkbox" name="successful" [value]="true" class="selectgroup-input"
+              formControlName="successful" [checked]="filterForm.get('successful').value">
+            <span class="selectgroup-button">Successful</span>
+          </label>
+          <label class="selectgroup-item">
+            <input type="checkbox" name="failed" [value]="true" class="selectgroup-input" formControlName="failed"
+              [checked]="filterForm.get('failed').value">
+            <span class="selectgroup-button">Failed</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rarities</label>
+        <div class="selectgroup selectgroup-pills">
+          <label class="selectgroup-item" *ngFor="let rarity of rarities; let i = index" formArrayName="rarities">
+            <input type="checkbox" [value]="rarity" [formControlName]="i" class="selectgroup-input" />
+            <span class="selectgroup-button" [ngClass]="'rarity-'+rarity">{{rarityEnum[rarity]}}</span>
+          </label>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

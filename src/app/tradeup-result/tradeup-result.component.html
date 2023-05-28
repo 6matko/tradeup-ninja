@@ -1,0 +1,257 @@
+<div class="my-3 my-md-5">
+  <div class="px-5">
+    <div class="row">
+      <div class="col-lg-3 order-lg-1 mb-4">
+        <div class="dimmer" [class.active]="false">
+          <div class="loader"></div>
+          <div class="dimmer-content">
+            <app-tradeup-result-filter (filterChange)="filterResults($event)"></app-tradeup-result-filter>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-9">
+        <ng-container *ngIf="summary; else loading">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Trade up results</h3>
+              <div class="card-options">
+                <div class="d-md-flex d-none">
+                  <button class="btn btn-sm btn-primary mr-3" (click)="toggleView()">
+                    <ng-container *ngIf="viewType === 'chart'; else showChartBtnContent">
+                      Show stats
+                    </ng-container>
+                    <ng-template #showChartBtnContent>
+                      Show chart
+                    </ng-template>
+                  </button>
+                  <button class="btn btn-sm btn-primary mr-3" (click)="displayStats()">Outcome stats</button>
+                  <input class="d-none" #importInput type="file" name="files" (change)="importResults($event)" />
+                  <button class="btn btn-sm btn-success mr-3" (click)="importInput.click()">IMPORT</button>
+                  <button class="btn btn-sm btn-warning mr-3" (click)="exportResults()">EXPORT</button>
+                  <button class="btn btn-sm btn-primary" (click)="openAddNewResultModal()">Add new</button>
+                </div>
+                <a href="javascript:;" (click)="toggleCollapse()" placement="top" ngbTooltip="Collapse/Expand">
+                  <i class="fe" [ngClass]="collapsed ? 'fe-chevron-down' : 'fe-chevron-up'"></i>
+                </a>
+              </div>
+            </div>
+            <div class="d-flex d-md-none justify-content-center flex-wrap py-3">
+              <button class="btn btn-sm btn-primary mr-3 mb-2" (click)="toggleView()">Toggle</button>
+              <button class="btn btn-sm btn-primary mr-3 mb-2" (click)="displayStats()">STATS</button>
+              <input class="d-none" #importInput type="file" name="files" (change)="importResults($event)" />
+              <button class="btn btn-sm btn-success mr-3 mb-2" (click)="importInput.click()">IMPORT</button>
+              <button class="btn btn-sm btn-warning mr-3 mb-2" (click)="exportResults()">EXPORT</button>
+              <button class="btn btn-sm btn-primary mb-2" (click)="openAddNewResultModal()">Add new</button>
+            </div>
+            <div class="d-none d-md-block px-2 mb-2" *ngIf="!collapsed && sortedResults?.length">
+              <ng-container *ngIf="viewType === 'chart'; else statsTmpl">
+                <app-tradeup-result-chart [results]="sortedResults"></app-tradeup-result-chart>
+              </ng-container>
+            </div>
+            <div>
+              <ng-container *ngIf="sortedResults.length; else noResultsAddedTmpl">
+                <virtual-scroller #scroll [items]="sortedResults" [bufferAmount]="1" class="pt-3">
+                  <div class="row mx-0" #container>
+                    <ng-container *ngFor="let result of scroll.viewPortItems; let i = index">
+                      <div class="col-xl-3 col-sm-6 col-md-4">
+                        <app-result-preview [result]="result" (resultModified)="updateResult($event, i)"
+                          (resultRemoved)="removeResult($event)"></app-result-preview>
+                      </div>
+                    </ng-container>
+                  </div>
+                </virtual-scroller>
+              </ng-container>
+              <ng-template #noResultsAddedTmpl>
+                <div class="col-12 text-center h3 my-5">
+                  No tradeups or results yet added or found.
+                </div>
+              </ng-template>
+            </div>
+            <div class="card-footer text-right h4 m-0">
+              Displaying: {{sortedResults.length}}
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #loading>
+  <div class="row">
+    <div class="col-12 mt-2">
+      <div class="loading-indicator my-0 mx-auto"></div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #statsTmpl>
+  <div class="row pt-3">
+    <div class="col-md-6 col-xl-3">
+      <div class="card stats-card">
+        <div class="card-body p-3 text-center">
+          <div class="invisible">
+            0
+          </div>
+          <div class="h1 m-0">{{summary.total}}</div>
+          <div class="text-muted mb-4">Trade ups completed</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+      <div class="card stats-card">
+        <div class="card-body p-3 text-center">
+          <div class="invisible">
+            0
+          </div>
+          <div class="h1 m-0">
+            <span class="value"
+              [ngClass]="summary.profit >= 0 ? 'text-success' : 'text-danger'">{{userPreferences.displayCurrency}}{{summary.profit | number:'1.2-2'}}</span>
+          </div>
+          <div class="text-muted mb-4">Profit</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+      <div class="card stats-card">
+        <div class="card-body p-3 text-center">
+          <div class="text-right text-green">
+            {{summary.successfulTradeupAmountPercentage | percent}}
+          </div>
+          <div class="h1 m-0">
+            <span class="text-success">
+              {{summary.successfulTradeupAmount}}
+            </span>
+          </div>
+          <div class="text-muted mb-4">Successful</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+      <div class="card stats-card">
+        <div class="card-body p-3 text-center">
+          <div class="invisible">
+            0
+          </div>
+          <div class="h1 m-0">
+            {{userPreferences.displayCurrency}}{{summary.averageCost | number:'1.2-2'}}
+          </div>
+          <div class="text-muted mb-4">Average cost</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 col-xl-3">
+      <div class="card p-3 stats-card">
+        <div class="d-flex align-items-center">
+          <span class="stamp stamp-md bg-red mr-3">
+            <i class="fas fa-shopping-cart"></i>
+          </span>
+          <div>
+            <h4 class="m-0">{{userPreferences.displayCurrency}}{{summary.totalSpent | number:'1.2-2'}}</h4>
+            <small class="text-muted">Total spent</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3">
+      <div class="card p-3 stats-card">
+        <div class="d-flex align-items-center">
+          <span class="stamp stamp-md bg-green mr-3">
+            <i class="fas fa-thumbs-up"></i>
+          </span>
+          <div>
+            <h4 class="m-0">{{userPreferences.displayCurrency}}{{summary.totalReceived | number:'1.2-2'}}</h4>
+            <small class="text-muted">Total received</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3">
+      <div class="card p-3 stats-card">
+        <div class="d-flex align-items-center">
+          <span class="stamp stamp-md bg-orange mr-3">
+            <i class="fas fa-star"></i>
+          </span>
+          <div>
+            <h4 class="m-0 text-orange font-weight-bold">{{summary.stattrakTradeupAmount}}
+              <small class="font-weight-bold">STATTRAK</small>
+            </h4>
+            <small class="text-muted">{{summary.stattrakTradeupAmountPercentage | percent}} of all
+              tradeups</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3">
+      <div class="card p-3 stats-card">
+        <div class="d-flex align-items-center">
+          <span class="stamp stamp-md mr-3" [ngClass]="summary.averageProfit > 0 ? 'bg-green' : 'bg-red'">
+            <i class="fe" [ngClass]="summary.averageProfit > 0 ? 'fe-trending-up' : 'fe-trending-down'"></i>
+          </span>
+          <div>
+            <h4 class="m-0">{{userPreferences.displayCurrency}}{{summary.averageProfit | number:'1.2-2'}}</h4>
+            <small class="text-muted">Average profit</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3">
+      <div class="card p-3 stats-card">
+        <div class="d-flex align-items-center">
+          <span class="stamp stamp-md mr-3 bg-red">
+            <i class="fas fa-arrow-alt-circle-down"></i>
+          </span>
+          <div>
+            <h4 class="m-0 text-danger">{{userPreferences.displayCurrency}}{{ summary.mostLoss * (-1) | number:'1.2-2'}}
+            </h4>
+            <small class="text-muted">Most loss</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3">
+      <div class="card p-3 stats-card">
+        <div class="d-flex align-items-center">
+          <span class="stamp stamp-md mr-3 bg-green">
+            <i class="fas fa-arrow-alt-circle-up"></i>
+          </span>
+          <div>
+            <h4 class="m-0 text-success">{{userPreferences.displayCurrency}}{{ summary.mostProfit | number:'1.2-2'}}
+            </h4>
+            <small class="text-muted">Most profit</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3">
+      <div class="card p-3 stats-card">
+        <div class="d-flex align-items-center">
+          <span class="stamp stamp-md mr-3 bg-blue">
+            <i class="fas fa-calculator"></i>
+          </span>
+          <div>
+            <h4 class="m-0">{{sortedResults.length}} <small>Tradeups added</small></h4>
+            <small class="text-muted" *ngIf="uncompletedResults.length">{{uncompletedResults.length}}
+              uncompleted</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<div class="floating-filter" *ngIf="sortedResults.length">
+  <div class="text-right">
+    <div ngbDropdown placement="top-right" class="d-inline-block">
+      <button class="btn btn-outline-primary" id="filter—dropdown" ngbDropdownToggle>Sort</button>
+      <div ngbDropdownMenu aria-labelledby="filter-dropdown">
+        <app-tradeup-result-sort (sort)="sortResults($event)"></app-tradeup-result-sort>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-result-collection-stats *ngIf="showStats" [stats]="collectionStats" (dismiss)="showStats = false">
+</app-result-collection-stats>

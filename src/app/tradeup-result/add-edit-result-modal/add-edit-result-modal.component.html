@@ -1,0 +1,196 @@
+<div class="modal-content">
+  <form [formGroup]="tradeupForm" (submit)="save()">
+    <div class="modal-header">
+      <ng-container *ngIf="resultForEdit; else addTradeupModalTitle">
+        <h5 class="modal-title">Edit tradeup #{{resultForEdit.id}}</h5>
+      </ng-container>
+      <ng-template #addTradeupModalTitle>
+        <h5 class="modal-title">Add new tradeup</h5>
+      </ng-template>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+      </button>
+    </div>
+    <div class="modal-body pt-0">
+      <ul ngbNav #nav="ngbNav" class="nav-tabs">
+        <li ngbNavItem>
+          <a ngbNavLink>Input items</a>
+          <ng-template ngbNavContent>
+            <ng-container formArrayName="inputItems">
+              <div class="row" *ngFor="let tradeupInput of inputItems.controls; let i = index; let isFirst = first">
+                <ng-container [formGroup]="tradeupInput">
+                  <div class="col-lg-5">
+                    <div class="form-group" [class.has-danger]="tradeupInput.get('name').invalid">
+                      <label class="form-control-label" for="name-{{i}}" *ngIf="isFirst">Name
+                        <small class="text-muted ml-1" *ngIf="copiedSkinName">{{copiedSkinName}}</small>
+                      </label>
+                      <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">{{i+1}}.</span>
+                        </div>
+                        <input type="text" class="form-control" [class.is-invalid]="tradeupInput.get('name').invalid"
+                          formControlName="name" name="name-{{i}}" id="name-{{i}}" />
+                        <div class="input-group-append">
+                          <button class="btn btn-outline-primary btn-sm" type="button"
+                            (click)="pasteSkinName(tradeupInput.get('name'))">
+                            <i class="fas fa-check"></i>
+                          </button>
+                          <button class="btn btn-outline-primary btn-sm" type="button"
+                            (click)="copySkinName(tradeupInput.get('name').value)">
+                            <i class="fas fa-copy"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <div class="form-group" [class.has-danger]="tradeupInput.get('float').invalid">
+                      <label class="form-control-label" for="float-{{i}}" *ngIf="isFirst">Float</label>
+                      <input type="number" [min]="0" [max]="1" step="0.01" class="form-control" formControlName="float"
+                        name="float-{{i}}" id="float-{{i}}" [class.is-invalid]="tradeupInput.get('float').invalid" />
+                    </div>
+                  </div>
+                  <div class="col-lg-3">
+                    <div class="form-group" [class.has-danger]="tradeupInput.get('price').invalid">
+                      <label class="form-control-label" for="price-{{i}}" *ngIf="isFirst">Price
+                        <small class="text-muted ml-1" *ngIf="copiedPrice">{{copiedPrice}}</small>
+                      </label>
+                      <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">{{userPreferences.displayCurrency}}</span>
+                        </div>
+                        <input type="number" class="form-control" formControlName="price" aria-label="Amount"
+                          formControlName="price" id="price-{{i}}" [min]="0" step="0.01"
+                          [class.is-invalid]="tradeupInput.get('price').invalid" />
+                        <div class="input-group-append">
+                          <button class="btn btn-outline-primary btn-sm" type="button"
+                            (click)="pastePrice(tradeupInput.get('price'))">
+                            <i class="fas fa-check"></i>
+                          </button>
+                          <button class="btn btn-outline-primary btn-sm" type="button"
+                            (click)="copyPrice(tradeupInput.get('price').value)">
+                            <i class="fas fa-copy"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+              <div class="row">
+                <div class="offset-lg-5 col-lg-4 text-right">
+                  <b
+                    [ngClass]="summary.averageInputFloat >= tradeupForm.get('floatRequired').value ? 'text-danger' : 'text-success'">{{summary.averageInputFloat | number:'1.7-7'}}</b>
+                </div>
+                <div class="col-lg-3 text-right">
+                  <b>{{userPreferences.displayCurrency}}{{summary.cost | number:'1.2-2'}}</b>
+                </div>
+              </div>
+            </ng-container>
+            <div class="row">
+              <div class="col-lg-5">
+                <div class="form-group">
+                  <div class="custom-controls-stacked">
+                    <label class="custom-control custom-checkbox">
+                      <input type="checkbox" class="custom-control-input" name="is-stattrak" id="is-stattrak"
+                        formControlName="stattrak">
+                      <span class="custom-control-label">STATTRAK</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="form-group" [class.has-danger]="tradeupForm.get('floatRequired').invalid">
+                  <label class="form-label">Float required</label>
+                  <div class="input-group">
+                    <span class="input-group-prepend" id="lessThan">
+                      <span class="input-group-text">
+                        < </span>
+                      </span>
+                      <input type="number" [min]="0" [max]="1" step="0.01" class="form-control"
+                        formControlName="floatRequired" name="float-required" id="float-required"
+                        [class.is-invalid]="tradeupForm.get('floatRequired').invalid" />
+                  </div>
+                </div>
+              </div>
+              <div class="offset-lg-3"></div>
+            </div>
+          </ng-template>
+        </li>
+        <li ngbNavItem>
+          <a ngbNavLink>Outcome</a>
+          <ng-template ngbNavContent>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-control-label" for="outcomeFloat">Skin</label>
+                  <input id="outcome-item-name" type="text" class="form-control" [inputFormatter]="formatter"
+                    formControlName="outcomeDisplayName" [ngbTypeahead]="searchSkin" [resultFormatter]="formatter"
+                    (selectItem)="selectOutcome($event)" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group" [class.has-danger]="tradeupForm.get('outcomeFloat').invalid">
+                  <label class="form-control-label" for="outcomeFloat">Float</label>
+                  <input type="number" [min]="0" [max]="1" step="0.01" class="form-control"
+                    formControlName="outcomeFloat" name="outcomeFloat" id="outcomeFloat"
+                    [class.is-invalid]="tradeupForm.get('outcomeFloat').invalid" />
+                </div>
+              </div>
+              <ng-container *ngIf="tradeupForm.get('outcome').value">
+                <div class="col-md-6 text-center">
+                  <img width="200" [src]="tradeupForm.get('outcome').value.image || 'assets/unknown.png'"
+                    [attr.alt]="tradeupForm.get('outcome').value.name"
+                    [attr.title]="tradeupForm.get('outcome').value.name" />
+                </div>
+                <div class="col-md-6">
+                  <button class="btn btn-danger" (click)="clearOutcome()">Clear outcome</button>
+                </div>
+              </ng-container>
+            </div>
+          </ng-template>
+        </li>
+        <li ngbNavItem>
+          <a ngbNavLink>Summary</a>
+          <ng-template ngbNavContent>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group" [class.has-danger]="tradeupForm.get('received').invalid">
+                  <label class="form-control-label" for="received">Received</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">{{userPreferences.displayCurrency}}</span>
+                    </div>
+                    <input type="number" class="form-control" formControlName="received" aria-label="Amount"
+                      formControlName="received" id="received" [min]="0" step="0.01"
+                      [class.is-invalid]="tradeupForm.get('received').invalid" />
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group" [class.has-danger]="tradeupForm.get('tradeupName').invalid">
+                  <label class="form-control-label" for="tradeupName">Tradeup name</label>
+                  <input type="text" class="form-control" formControlName="tradeupName" aria-label="Tradeup name"
+                    formControlName="tradeupName" id="tradeupName"
+                    [class.is-invalid]="tradeupForm.get('tradeupName').invalid" />
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="form-group">
+                  <label for="notes">Notes</label>
+                  <textarea class="form-control" id="notes" formControlName="notes" rows="4"></textarea>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </li>
+      </ul>
+
+      <div [ngbNavOutlet]="nav" class="mt-3"></div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal"
+        (click)="activeModal.dismiss()">Close</button>
+      <button type="submit" class="btn btn-primary" [disabled]="tradeupForm.invalid">Save changes</button>
+    </div>
+  </form>
+</div>
