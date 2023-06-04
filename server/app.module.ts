@@ -15,9 +15,7 @@ import { UsersModule } from './users/users.module';
       bootstrap: AppServerModule,
       // IMPORTANT NOTE: If we need "LOCAL DEV" then this value should be "dist/browser".
       // For PRODUCTION and deployment it should be "browser".
-      // TODO: Find a solution how to set it on local machine and for deployment. Maybe .env variable ?
-      viewsPath: join(process.cwd(), 'dist/browser')
-      // viewsPath: join(process.cwd(), 'browser'),
+      viewsPath: join(process.cwd(), process.env['IS_PRODUCTION'] === '1' ? 'browser' : 'dist/browser')
     }),
     ItemsModule,
     StickerPriceModule,
