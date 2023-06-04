@@ -60,8 +60,18 @@ JWT_SECRET="YourSuperSecret"
 # One of the main reasons it was added because STEAM needs return URL and in development
 # we need it as localhost:4200 but in production or QA completely different
 CURRENT_HOSTNAME="http://localhost:4200"
+# .env treats its values as strings so the simplest way is to provide string numbers here
+# 0 = false
+# 1 = true
+IS_PRODUCTION="0"
 ```
 #### To run only UI part (Angular) - Search and items won't be available:
 6. Run `npm start` 
 #### To run UI + Server - Search and items will be available:
 6. Run `npm run dev:ssr`
+
+## How to start pre-built project
+1. Create/copy `.env` file to `/dist` folder
+2. Make sure that `.env` in `/dist` folder has `IS_PRODUCTION="1"`
+3. Go to `/dist` folder
+4. Open CMD and run `node .\server\main.js`
