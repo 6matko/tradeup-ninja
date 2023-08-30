@@ -77,5 +77,6 @@ IS_PRODUCTION="0"
 4. Open CMD and run `node .\server\main.js`
 
 ### Notes
-Since CS2 doesn't have `items_game.txt` file anymore which this project is relying a lot, there is a fallback file as of this date (30th Aug 2023).
-If CSGO releases a new update with new skins you need to add this file to `dist/files` if you are using pre-built version or in `src/assets/server/files` where current file is located. This way on project start it will copy this file to correct folder (`dist/files`) and will use it. There is a high chance that after CS2 release this project will become obsolete.
+Since CS2 doesn't have `items_game.txt` file anymore which this project is relaying a lot, there is a fallback file as of this date (30th Aug 2023).
+If CSGO releases a new update with new skins you need to add this file to `dist/files` if you are using pre-built version. If running locally then make sure its in 
+`src/assets/server/files` where current file is located. This way on project start it will copy this file to correct folder (`dist/files`) and will use it. There is a high chance that after CS2 release this project will become obsolete.
