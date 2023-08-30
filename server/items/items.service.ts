@@ -190,8 +190,11 @@ export class ItemsService {
         })),
       this.httpService.get(STEAM_ITEMS_GAME_URL, { responseType: 'text' })
         .pipe(catchError(err => {
-          console.error(`Error while getting Items-Game`);
-          return this.getFile('items_game.txt', true).pipe(catchError(fileError => throwError(fileError)));
+          console.error(`Error while getting Items-Game. Trying to get fallback file`);
+          return this.getFile('items_game.txt', true).pipe(catchError(fileError => {
+            console.error(`Error while getting fallback file`);
+            return throwError(fileError);
+          }));
         })
         ),
     ]).pipe(
