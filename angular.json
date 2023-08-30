@@ -37,10 +37,19 @@
                 "glob": "server.js",
                 "input": "src/assets/server",
                 "output": "./../"
+              },
+              {
+                "glob": "*",
+                "input": "src/assets/server/files",
+                "output": "./../server/files/"
               }
             ],
-            "styles": ["src/main.scss"],
-            "scripts": ["node_modules/chart.js/dist/Chart.min.js"],
+            "styles": [
+              "src/main.scss"
+            ],
+            "scripts": [
+              "node_modules/chart.js/dist/Chart.min.js"
+            ],
             "webWorkerTsConfig": "tsconfig.worker.json"
           },
           "configurations": {
@@ -117,8 +126,15 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": ["tsconfig.app.json", "tsconfig.spec.json", "e2e/tsconfig.json", "tsconfig.worker.json"],
-            "exclude": ["**/node_modules/**"]
+            "tsConfig": [
+              "tsconfig.app.json",
+              "tsconfig.spec.json",
+              "e2e/tsconfig.json",
+              "tsconfig.worker.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         },
         "e2e": {
@@ -178,7 +194,9 @@
           "options": {
             "browserTarget": "tradeupsearch:build:production",
             "serverTarget": "tradeupsearch:server:production",
-            "routes": ["/"]
+            "routes": [
+              "/"
+            ]
           },
           "configurations": {
             "production": {}

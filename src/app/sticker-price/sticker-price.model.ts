@@ -45,7 +45,7 @@ export interface CsgoTraderAppItemPrices {
     csgotm: string;
     csmoney: Csmoney;
     skinport: Skinport;
-    csgotrader: Csgotrader;
+    cstrade: Csgotrader;
     csgoempire: number;
     swapgg: number;
     csgoexo: number;

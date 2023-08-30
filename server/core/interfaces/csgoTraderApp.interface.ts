@@ -10,7 +10,6 @@ export interface CsgoTraderAppItem {
   csgotm: null | string;
   csmoney: Csgotrader | null;
   skinport: Skinport | null;
-  csgotrader: Csgotrader;
   csgoempire: number | null;
   swapgg: number | null;
   csgoexo: number | null;

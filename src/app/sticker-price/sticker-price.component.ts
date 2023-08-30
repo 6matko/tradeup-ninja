@@ -525,7 +525,7 @@ export class StickerPriceComponent implements OnInit {
       case 'skinport':
         return skin.prices.skinport.starting_at;
       case 'csgotrader':
-        return skin.prices.csgotrader.price;
+        return skin.prices.cstrade.price;
       case 'csgoempire':
         return skin.prices.csgoempire;
       case 'swapgg':

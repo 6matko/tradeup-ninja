@@ -13,9 +13,9 @@ import { ItemSync, WeaponEnum } from './items.model';
 
 export const DOT_CHAR = '\\u002e';
 const STEAM_ITEMS_GAME_URL =
-  'https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/master/csgo/scripts/items/items_game.txt';
+  'https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/master/game/csgo/scripts/items/items_game.txt';
 const STEAM_CSGO_ENGLISH_URL =
-  'https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/master/csgo/resource/csgo_english.txt';
+  'https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/master/game/csgo/resource/csgo_english.txt';
 const FILES_FOLDER = __dirname + '/files';
 
 @Injectable()
@@ -128,7 +128,7 @@ export class ItemsService {
             // "M4A4 | Emperor (Factory New)" which doesn't exist.
             // "M4A4 | The Emperor (Factory New)" exists. So for first case
             // price will be null and thats logical because its wrong skin.
-            if (data[k].csgotrader.price) {
+            if (data[k].cstrade?.price) {
               validSkinMap.set(k, data[k]);
             }
           });
@@ -183,15 +183,23 @@ export class ItemsService {
   private getParsedIngameData(): Observable<{ parsedCsgoEnglish: any; parsedItemsGame: any }> {
     // Using forkJoin to get both files in parallel (async)
     return forkJoin([
-      this.httpService.get(STEAM_CSGO_ENGLISH_URL, { responseType: 'text' }),
-      this.httpService.get(STEAM_ITEMS_GAME_URL, { responseType: 'text' }),
+      this.httpService.get(STEAM_CSGO_ENGLISH_URL, { responseType: 'text' })
+        .pipe(catchError(err => {
+          console.error(`Error while getting CSGO-English`);
+          return throwError(err);
+        })),
+      this.httpService.get(STEAM_ITEMS_GAME_URL, { responseType: 'text' })
+        .pipe(catchError(err => {
+          console.error(`Error while getting Items-Game`);
+          return this.getFile('items_game.txt', true).pipe(catchError(fileError => throwError(fileError)));
+        })
+        ),
     ]).pipe(
-      map((data: any[]) => {
-        // Storing data for quick access
-        const [csgoEnglish, itemsGame] = data;
-
+      map(([csgoEnglish, itemsGame]: [any, any]) => {
         const parsedCsgoEnglish = objectKeysToLowerCase(vdf.parse(csgoEnglish.data)['lang']['Tokens']);
-        const parsedItemsGame = vdf.parse(itemsGame.data)['items_game'];
+        // If we received items via github then we would use "data" from that response but if we
+        // received it from fallback file then would use content of that since its not a response and doesn't have "data"
+        const parsedItemsGame = vdf.parse(itemsGame.data || itemsGame)['items_game'];
 
         // Manually adding some skins to cases that were removed previously
         // NOTE: These values are taken from "item_sets.items"
@@ -296,7 +304,7 @@ export class ItemsService {
     return fileToSave$(`${FILES_FOLDER}/${fileName}`, JSON.stringify(dataForSave), { encoding: 'utf8' });
   }
 
-  private getFile<T>(fileName: string): Observable<T> {
+  private getFile<T>(fileName: string, skipParse?: boolean): Observable<T> {
     // Binding Node JS Callback method to Observable so we could use it in RxJS
     const getFile$ = bindNodeCallback(fs.readFile).bind(fs);
     try {
@@ -305,7 +313,7 @@ export class ItemsService {
         .pipe(
           map((content: string) => {
             // Parsing file cause content is stringified
-            const data = JSON.parse(content) as T;
+            const data = skipParse ? content : JSON.parse(content) as T;
             return data;
           })
         );

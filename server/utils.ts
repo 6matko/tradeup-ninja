@@ -1,7 +1,7 @@
 import { indexOf } from 'lodash';
 import { CollectionInfoWithSkin } from './core';
-import { CsgoFloatWeapon, Paint } from './core/interfaces/csgofloat.interface';
 import { CsgoTraderAppItem, SkinPriceDictionary } from './core/interfaces/csgoTraderApp.interface';
+import { CsgoFloatWeapon, Paint } from './core/interfaces/csgofloat.interface';
 import { DecodedSkinInfo } from './core/interfaces/utils.interface';
 import { Collection, CollectionsWithSkin, ICollectionWithSkins, ItemSync, Rarity, Weapon, Wear } from './items/items.model';
 import { DOT_CHAR } from './items/items.service';
@@ -374,10 +374,10 @@ export function getSkinPrices(weapons: Map<string, CsgoTraderAppItem>): SkinPric
       // If weapon is stattrak then adding it to stattrak list
       // TODO: Add support for weapon variation and variation prices (Doppler)
       if (isStattrak) {
-        currentDistinctSkin.stattrak[wearIndex] = weaponSkin.csgotrader.price;
+        currentDistinctSkin.stattrak[wearIndex] = weaponSkin.cstrade.price;
       } else {
         // Otherwise to normal list
-        currentDistinctSkin.normal[wearIndex] = weaponSkin.csgotrader.price;
+        currentDistinctSkin.normal[wearIndex] = weaponSkin.cstrade.price;
       }
     } else {
       // Initializing distinct skin object with empty lists
@@ -389,10 +389,10 @@ export function getSkinPrices(weapons: Map<string, CsgoTraderAppItem>): SkinPric
       // Otherwise creating new distinct skin and setting current weapon skin as its initial skin instance
       // If current weapon is stattrak then adding it to stattrak list
       if (isStattrak) {
-        distinct[skinNameWithoutExterior].stattrak[wearIndex] = weaponSkin.csgotrader.price;
+        distinct[skinNameWithoutExterior].stattrak[wearIndex] = weaponSkin.cstrade.price;
       } else {
         // Otherwise to normal list
-        distinct[skinNameWithoutExterior].normal[wearIndex] = weaponSkin.csgotrader.price;
+        distinct[skinNameWithoutExterior].normal[wearIndex] = weaponSkin.cstrade.price;
       }
     }
   });
