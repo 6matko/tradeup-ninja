@@ -6,16 +6,16 @@ import * as fs from 'fs';
 import { Observable, bindNodeCallback, forkJoin, from, of, throwError } from 'rxjs';
 import { catchError, concatMap, map, switchMap, tap } from 'rxjs/operators';
 import * as vdf from 'simple-vdf';
-import { CsgoTraderAppData, CsgoTraderAppItem } from '../core/interfaces/csgoTraderApp.interface';
+import { CsgoTraderAppData } from '../core/interfaces/csgoTraderApp.interface';
 import { CSGOFloatSchema } from '../core/interfaces/csgofloat.interface';
-import { createSyncResult, getWearIndex, objectKeysToLowerCase } from '../utils';
-import { ItemSync, WeaponEnum } from './items.model';
+import { createSyncResult, objectKeysToLowerCase } from '../utils';
+import { ItemSync } from './items.model';
 
 export const DOT_CHAR = '\\u002e';
 const STEAM_ITEMS_GAME_URL =
-  'https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/master/game/csgo/scripts/items/items_game.txt';
+  'https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/c1c794f5bb3e06eb13bf1a628a72bf00a3f673ce/game/csgo/pak01_dir/scripts/items/items_game.txt';
 const STEAM_CSGO_ENGLISH_URL =
-  'https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/master/game/csgo/resource/csgo_english.txt';
+  'https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/pak01_dir/resource/csgo_english.txt';
 const FILES_FOLDER = __dirname + '/files';
 
 @Injectable()
@@ -102,48 +102,10 @@ export class ItemsService {
   @Cron(CronExpression.EVERY_3_HOURS)
   syncItems() {
     console.log(`Syncing items`, new Date().toUTCString());
-    this.csgoTraderAppPrices$
-      .pipe(
-        switchMap((request) => {
-          const data = {};
-
-          Object.keys(request.data).forEach((key) => {
-            data[key] = request.data[key];
-            data[key]['market_name'] = key;
-          });
-          return this.saveFile(data, 'csgotraderapp.json');
-        }),
-        map((data: CsgoTraderAppData) => {
-          const weaponNameStringForRegex = Object.values(WeaponEnum).join('|');
-          const strRegExPattern = '^(?=.*(' + weaponNameStringForRegex + '))(?:(?!Souvenir).)+$';
-          // Making sure that we ignore Souvenirs and entries without wear. THere are some weird entries like
-          // sticker The AWPer and similar to that
-          const validKeys = Object.keys(data).filter(
-            (k) => k.match(new RegExp(strRegExPattern, 'i')) && getWearIndex(k) !== -1
-          );
-          const validSkinMap = new Map<string, CsgoTraderAppItem>();
-          validKeys.forEach((k) => {
-            // Adding skin map only if we have price.
-            // There are a few cases with wrong naming like:
-            // "M4A4 | Emperor (Factory New)" which doesn't exist.
-            // "M4A4 | The Emperor (Factory New)" exists. So for first case
-            // price will be null and thats logical because its wrong skin.
-            if (data[k].cstrade?.price) {
-              validSkinMap.set(k, data[k]);
-            }
-          });
-          return validSkinMap;
-        }),
-        tap((data) => {
-          // FIXME: Remove afterwards
-          console.log(data.size);
-        }),
-        switchMap((data) => this.syncItemsForItemSync(data))
-      )
-      .toPromise();
+    this.syncItemsForItemSync().toPromise();
   }
 
-  syncItemsForItemSync(allWeapons: Map<string, CsgoTraderAppItem>) {
+  syncItemsForItemSync() {
     console.log(`Syncing items FOR NINJA`, new Date().toUTCString());
 
     return this.csgoFloatSchema$.pipe(
@@ -171,7 +133,6 @@ export class ItemsService {
         const outputSyncResults = createSyncResult(
           parsedIngameData.parsedItemsGame,
           parsedIngameData.parsedCsgoEnglish,
-          allWeapons,
           csgoFloatWeapons
         );
 

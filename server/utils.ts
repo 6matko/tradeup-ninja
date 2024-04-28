@@ -1,6 +1,5 @@
 import { indexOf } from 'lodash';
 import { CollectionInfoWithSkin } from './core';
-import { CsgoTraderAppItem, SkinPriceDictionary } from './core/interfaces/csgoTraderApp.interface';
 import { CsgoFloatWeapon, Paint } from './core/interfaces/csgofloat.interface';
 import { DecodedSkinInfo } from './core/interfaces/utils.interface';
 import { Collection, CollectionsWithSkin, ICollectionWithSkins, ItemSync, Rarity, Weapon, Wear } from './items/items.model';
@@ -359,60 +358,25 @@ export function getSkinNameWithoutExterior(skin: string): string {
 }
 
 
-export function getSkinPrices(weapons: Map<string, CsgoTraderAppItem>): SkinPriceDictionary {
-  const distinct: SkinPriceDictionary = {};
-  weapons.forEach((weaponSkin, key) => {
-    // Checking if its stattrak item
-    const isStattrak = key.includes('StatTrak™');
-    // Getting skin name without exterior
-    const skinNameWithoutExterior = getSkinNameWithoutExterior(key);
-    const wearIndex = getWearIndex(key);
-    // Storing current distinct skin key for quick access
-    const currentDistinctSkin = distinct[skinNameWithoutExterior];
-    // If current distinct skin exists then pushing current weapon skin to its instance list
-    if (currentDistinctSkin) {
-      // If weapon is stattrak then adding it to stattrak list
-      // TODO: Add support for weapon variation and variation prices (Doppler)
-      if (isStattrak) {
-        currentDistinctSkin.stattrak[wearIndex] = weaponSkin.cstrade.price;
-      } else {
-        // Otherwise to normal list
-        currentDistinctSkin.normal[wearIndex] = weaponSkin.cstrade.price;
-      }
-    } else {
-      // Initializing distinct skin object with empty lists
-      distinct[skinNameWithoutExterior] = {
-        normal: Array(5).fill(null),
-        stattrak: Array(5).fill(null),
-      };
-
-      // Otherwise creating new distinct skin and setting current weapon skin as its initial skin instance
-      // If current weapon is stattrak then adding it to stattrak list
-      if (isStattrak) {
-        distinct[skinNameWithoutExterior].stattrak[wearIndex] = weaponSkin.cstrade.price;
-      } else {
-        // Otherwise to normal list
-        distinct[skinNameWithoutExterior].normal[wearIndex] = weaponSkin.cstrade.price;
-      }
-    }
+export function getSkinNames(weapons: { [k: string]: CsgoFloatWeapon }): string[] {
+  const names = [];
+  Object.keys(weapons).forEach(key => {
+    const weaponName = weapons[key].name;
+    Object.values(weapons[key].paints).forEach(paint => names.push(`${weaponName} | ${paint.name}`));
   });
-
-  return distinct;
+  return names;
 }
 
 export function getWeaponsForSync(
-  allWeapons: Map<string, CsgoTraderAppItem>,
   collectionsWithSkins: { [key: string]: CollectionsWithSkin },
   csgoFloatWeapons?: { [k: string]: CsgoFloatWeapon }
 ): { [k: string]: Weapon } {
   // Dictionary with distincts skins. Value is list of all instances for this given skin (exteriors)
-  const distinctSkins = getSkinPrices(allWeapons);
+  const distinctSkinNames = getSkinNames(csgoFloatWeapons);
 
   // Resulting weapons
   const weapons: { [k: string]: Weapon } = {};
-  for (const key in distinctSkins) {
-    if (distinctSkins.hasOwnProperty(key)) {
-      const skinPrice = distinctSkins[key];
+    distinctSkinNames.forEach(key => {
       const csgoFloatPaint = getPaintFromCsgoFloatWeapon(csgoFloatWeapons, key);
       const collectionWithSkin = getCollectionWithSkin(collectionsWithSkins, key);
       // Adding weapon to dictionary only if skin is already in collection.
@@ -426,7 +390,10 @@ export function getWeaponsForSync(
         weapons[keyWithoutDot] = {
           name: key,
           rarity: collectionWithSkin.skin.rarity,
-          price: skinPrice,
+          price: {
+            normal: csgoFloatPaint.normal_prices,
+            stattrak: csgoFloatPaint.stattrak_prices,
+          },
           volume: {
             normal: csgoFloatPaint?.normal_volume,
             stattrak: csgoFloatPaint?.stattrak_volume
@@ -440,12 +407,10 @@ export function getWeaponsForSync(
           min: collectionWithSkin.skin.min,
           max: collectionWithSkin.skin.max,
           image: csgoFloatWeapons ? getSkinImage(csgoFloatWeapons, key) : '',
-          // If skin has ST price then marking as it can be in stattrak
-          stattrak: skinPrice.stattrak.some(v => v !== null)
+          stattrak: csgoFloatPaint.stattrak
         };
       }
-    }
-  }
+    });
 
   return weapons;
 }
@@ -454,7 +419,6 @@ export function getWeaponsForSync(
 export function createSyncResult(
   parsedItemsGame: any,
   parsedCsgoEnglish: any,
-  allWeapons: Map<string, CsgoTraderAppItem>,
   csgoFloatWeapons?: { [k: string]: CsgoFloatWeapon }
 ) {
   // Initializing sync result object. It will get filled with necessary data
@@ -476,7 +440,7 @@ export function createSyncResult(
   // const weaponNameIds = createWeaponDictionaryByNameId(collectionWithSkins);
 
   // Getting information about weapons
-  const weapons = getWeaponsForSync(allWeapons, collectionWithSkins.collectionsWithSkins, csgoFloatWeapons);
+  const weapons = getWeaponsForSync(collectionWithSkins.collectionsWithSkins, csgoFloatWeapons);
   // Storing name IDs for each weapon. This will be used for recreating specific tradeups
   // outputSyncResult.nameIds = weaponNameIds;
 
